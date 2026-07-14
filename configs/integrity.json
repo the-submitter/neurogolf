@@ -1,0 +1,37 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "configs/scorer.yaml": "27ed3fde7ecff815aa882fbf318b63353e938967a338b98667172f8a6bc98de8",
+    "configs/solver.yaml": "f00828293a3b745fbf3891e5536a9b2e78bc593a019842e686471f637d1a80df",
+    "configs/task_map.json": "136ca99a5cebf173753a4e98d21032b30e8ba70dd0045f6e0b0e033def8c226e",
+    "neurogolf/arcgen/generator.py": "25f1cb8a8dc132767bd3418ac6477aa7cd6fb3d62aff9f5d3d7543d0a297e9cd",
+    "neurogolf/arcgen/importer.py": "6ebf83ec929691e43412ac42a0e411d7a52c770f7a6534777999eb5fbc0d2cf3",
+    "neurogolf/arcgen/sampling.py": "f271b0fe03a46fb74cc8bab0429fa3bc12ae8302fabfc87cd86367f6d7912ca2",
+    "neurogolf/arcgen/tracing.py": "2ceafa3d7b0f9b717511846637578a0181ca91db7b339a2511aa26c042ffd68b",
+    "neurogolf/config/__init__.py": "459c482fab5591b0016b8b1842c170a81449ccb62a23172428961d96069b589c",
+    "neurogolf/config/loader.py": "e03dd86441a07eb57a1d39e35aae6640c6108bf8df67abb27767fe2fc9cf4bd7",
+    "neurogolf/config/models.py": "da48c2ba70b80397a576ebd16f2e865011b77f167af765f7f043df7f5429aaa5",
+    "neurogolf/judge/candidate_runner.py": "68d41eac4759777b2e4e44689a7cdfda43bd891eee14ae76732e1b4c9596a20c",
+    "neurogolf/judge/counterexamples.py": "b7d971bf59d2b50086a23d4238a82cf69894e99b4292a151d2d35421fa584fe0",
+    "neurogolf/judge/gate.py": "d5d46cad425c1ac25602e2656e8119ad063b098b3c5b645acaf964f6d52a3334",
+    "neurogolf/judge/legality.py": "0aae5a162ee6c7b4657f21f96ba0ac41058cf03d9d86e94b9c10c1936ce1c389",
+    "neurogolf/judge/official_adapter.py": "d01481d6463b9cb4c6852c2d8c91a4fec3be0f0fd8eac38398c7395b028e784b",
+    "neurogolf/judge/promotion.py": "f9e6ba4681d43f367d1620527cc53786f9de6e7235a45d7a24e6f5fd8009534b",
+    "neurogolf/judge/registry.py": "dbe0b39d6e9a4cee768617db05329abb93abc45440a2506308885b9cdbf709ab",
+    "neurogolf/judge/reports.py": "ad07003f1095af2c28442b93b711a30b83d6fe8ddcc80a505758765a709fab9d",
+    "neurogolf/judge/sealed.py": "068fa2135b9345395efc857806d13689c69076f995593b55e540f34a492c4c03",
+    "neurogolf/schemas/failure_packet.schema.json": "1e183d0378d1f5595f69addabe82f15c7790622ff02ec8db60b7d6137ade0693",
+    "neurogolf/schemas/gate_result.schema.json": "968c1fafbf5a0cff675f82295c70a0899a6491ed26171261e2437901f739e9b7",
+    "neurogolf/tasks/integrity.py": "3e9bde4a22c09250c2fe964b9f7b90d48f4e7f2e1b4555187e35fc16b5219eeb",
+    "neurogolf/tasks/loader.py": "1b6c959f0a7e481544dd51bde0b183c4b735db4e10fcf7d148cc316bb2b91d13",
+    "neurogolf/tasks/mapping.py": "258018c99ef79fd718d16b6d16eb5e26f26562e83b0ff13c4efcdd74d5f9c15f",
+    "neurogolf/tasks/models.py": "4097c0a9accc68c79f594b234286a881d272d128fad4a3321bbefe8c536176f1",
+    "sealed/seeds.json": "7a6a98b369f74b6c123c6d3a60adb5a199e68aa43980610ec4703ab52617e827",
+    "utils/neurogolf_utils.py": "9f61a3d4fd1505f02da676d1f7a8f1d3059a6b6338b215234d9d674d2e1fdc9a"
+  },
+  "git_revisions": {
+    "ARC-GEN": "2394883d865927b79deff2242f98f99a4fdf0f32"
+  },
+  "judge_version": "neurogolf-judge-v1",
+  "version": 1
+}

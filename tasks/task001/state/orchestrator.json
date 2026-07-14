@@ -1,0 +1,55 @@
+{
+  "completed_at": "2026-07-13T21:03:37.672071+00:00",
+  "epoch": 1,
+  "error": null,
+  "event_log": "/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/codex_epoch_01.jsonl",
+  "final_message": "{\"schema_version\":\"1.0\",\"task_num\":1,\"task_id\":\"007bbfb7\",\"status\":\"passed\",\"summary\":\"Implemented the 3\u00d73 Kronecker-stencil transformation as a legal 10-node opset-10 ONNX graph. All 3,148 protected-gate cases passed; official objective: 966.\",\"candidate_path\":\"/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx\",\"candidate_sha256\":\"b88f66dbaf7e8036951ce4b013fcc16c7c0644ddd6e4496e08f06846566d9bcb\",\"gate_result_path\":\"/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/gate_result.json\",\"commands\":[\"~/.venv/bin/python /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/build.py\",\"~/.venv/bin/pytest -q /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/devtests\",\"~/.venv/bin/python -m neurogolf.cli onnx inspect /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx --cost-breakdown\",\"~/.venv/bin/python -m neurogolf.cli gate run --task 1 --candidate /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx --output /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/gate_result.json\"],\"tests\":[{\"name\":\"ONNX checker/runtime/conversion parity\",\"passed\":true,\"details\":\"Full checker, strict shape inference, disabled-optimization runtime, and official conversion parity passed.\"},{\"name\":\"Task development tests\",\"passed\":true,\"details\":\"5/5 passed, including focused semantic boundary and all-color cases.\"},{\"name\":\"Protected external gate\",\"passed\":true,\"details\":\"Public 6/6; provided ARC-GEN 262/262; regression 256/256; fuzz 512/512; boundary 64/64; sealed 2,048/2,048.\"},{\"name\":\"Result schema and hash consistency\",\"passed\":true,\"details\":\"state/codex_result.json validates; candidate and gate hashes match exactly.\"}],\"next_action\":\"No solver action remains. A maintainer may review and promote only this exact hash; no promotion was performed.\"}",
+  "invocation_mode": "fresh",
+  "kind": "solve",
+  "return_code": 0,
+  "session_id": "019f5d31-1519-75c1-bac1-bed007871ee5",
+  "started_at": "2026-07-13T20:35:25.346109+00:00",
+  "status": "completed",
+  "task_num": 1,
+  "timed_out": false,
+  "worker_result": {
+    "candidate_path": "/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx",
+    "candidate_sha256": "b88f66dbaf7e8036951ce4b013fcc16c7c0644ddd6e4496e08f06846566d9bcb",
+    "commands": [
+      "~/.venv/bin/python /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/build.py",
+      "~/.venv/bin/pytest -q /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/devtests",
+      "~/.venv/bin/python -m neurogolf.cli onnx inspect /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx --cost-breakdown",
+      "~/.venv/bin/python -m neurogolf.cli gate run --task 1 --candidate /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx --output /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/gate_result.json"
+    ],
+    "gate_result_path": "/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/gate_result.json",
+    "next_action": "No solver action remains. A maintainer may review and promote only this exact hash; no promotion was performed.",
+    "schema_version": "1.0",
+    "status": "passed",
+    "summary": "Implemented the 3\u00d73 Kronecker-stencil transformation as a legal 10-node opset-10 ONNX graph. All 3,148 protected-gate cases passed; official objective: 966.",
+    "task_id": "007bbfb7",
+    "task_num": 1,
+    "tests": [
+      {
+        "details": "Full checker, strict shape inference, disabled-optimization runtime, and official conversion parity passed.",
+        "name": "ONNX checker/runtime/conversion parity",
+        "passed": true
+      },
+      {
+        "details": "5/5 passed, including focused semantic boundary and all-color cases.",
+        "name": "Task development tests",
+        "passed": true
+      },
+      {
+        "details": "Public 6/6; provided ARC-GEN 262/262; regression 256/256; fuzz 512/512; boundary 64/64; sealed 2,048/2,048.",
+        "name": "Protected external gate",
+        "passed": true
+      },
+      {
+        "details": "state/codex_result.json validates; candidate and gate hashes match exactly.",
+        "name": "Result schema and hash consistency",
+        "passed": true
+      }
+    ]
+  },
+  "worker_result_error": null
+}
