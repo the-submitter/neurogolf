@@ -1,0 +1,34 @@
+paths:
+  arcgen_root: ARC-GEN
+  kaggle_data_root: data
+  task_map: configs/task_map.json
+  official_utils: utils/neurogolf_utils.py
+  task_workspace_root: tasks
+  champion_root: champions
+  sealed_manifest: sealed/seeds.json
+  integrity_manifest: configs/integrity.json
+
+generation:
+  development_seed_count: 64
+  regression_seed_count: 256
+  gate_fuzz_count: 512
+  boundary_seed_count: 64
+  sealed_seed_count: 2048
+  max_attempts_per_seed: 50
+
+gate:
+  timeout_seconds: 600
+  max_failure_examples: 8
+  require_public_pass: true
+  require_regression_pass: true
+  require_fuzz_pass: true
+  require_sealed_pass: true
+  auto_promote_eligible: true
+
+codex:
+  executable: codex
+  model: gpt-5.6-sol
+  reasoning_effort: xhigh
+  max_parallel_tasks: 4
+  timeout_seconds: 7200
+  max_epochs: 4

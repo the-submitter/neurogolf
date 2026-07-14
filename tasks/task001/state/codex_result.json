@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0",
+  "task_num": 1,
+  "task_id": "007bbfb7",
+  "status": "passed",
+  "summary": "Optimized the fully general 3x3 Kronecker-stencil solution from the preserved champion objective 966 to 488 with a legal six-node opset-9 dynamic-ConvTranspose graph. Exact SHA-256 87627d6d6cdca34a8e9481b1a283db4de5292abb2f272a20f89fd9d80aa56734 passed all 3148 protected cases and was auto-promoted. The 49.5% objective reduction is substantial but remains above the current approximate 94.97 cross-task budget.",
+  "candidate_path": "/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx",
+  "candidate_sha256": "87627d6d6cdca34a8e9481b1a283db4de5292abb2f272a20f89fd9d80aa56734",
+  "gate_result_path": "/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/gate_result.json",
+  "commands": [
+    "~/.venv/bin/python -m neurogolf.cli tasks show 1",
+    "~/.venv/bin/python /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/build.py",
+    "~/.venv/bin/pytest -q /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/devtests",
+    "~/.venv/bin/python -m neurogolf.cli onnx inspect /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx --cost-breakdown",
+    "onnx.checker.check_model(full_check=True), strict shape inference, disabled-optimization ONNX Runtime, and OfficialAdapter conversion parity probe",
+    "~/.venv/bin/python -m neurogolf.cli gate run --task 1 --candidate /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/solution/candidate.onnx --output /media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf/tasks/task001/state/gate_result.json",
+    "~/.venv/bin/python -m neurogolf.cli champions show 1"
+  ],
+  "tests": [
+    {
+      "name": "Required evidence and semantic rule",
+      "passed": true,
+      "details": "Read the complete root/task instructions, dossier metadata, canonical JSON, generator source/signature, textual rendering, all 268 visual pairs, champion history, and gate/failure state. All 268 dossier examples exactly match M tensor-product M; no failure packet exists."
+    },
+    {
+      "name": "Champion baseline preservation and verification",
+      "passed": true,
+      "details": "The prior champion b88f66dbaf7e8036951ce4b013fcc16c7c0644ddd6e4496e08f06846566d9bcb was preserved byte-for-byte in task state and champion storage, rebuilt deterministically, passed 6/6 development tests at that stage, and freshly passed the full protected gate as already_current before optimization."
+    },
+    {
+      "name": "Optimized builder, checker, and runtime",
+      "passed": true,
+      "details": "Deterministic six-node opset-9 rebuild produced exact SHA-256 87627d6d6cdca34a8e9481b1a283db4de5292abb2f272a20f89fd9d80aa56734. Full checker, strict shape inference, one float32 [1,10,30,30] input/output, disabled-optimization ONNX Runtime, and exact conversion parity passed."
+    },
+    {
+      "name": "Task-local development tests",
+      "passed": true,
+      "details": "6/6 passed, covering public/provided ARC-GEN data, empty, single-cell, asymmetric, fully occupied stencils, all foreground colors 1-9, conversion parity, and an objective/structure regression assertion."
+    },
+    {
+      "name": "Protected external gate suites",
+      "passed": true,
+      "details": "Public 6/6; provided ARC-GEN 262/262; regression 256/256; fresh fuzz 512/512; boundary 64/64; sealed 2048/2048. Total 3148/3148, with valid integrity, legal model, no skips, no errors, and no failure packet."
+    },
+    {
+      "name": "Official optimized score",
+      "passed": true,
+      "details": "476 intermediate tensor bytes plus 12 parameter elements = exact objective 488 and 18.80968459414685 points, improving objective by 478 (49.5%) from the prior champion's 966."
+    },
+    {
+      "name": "Eligible-candidate auto-promotion",
+      "passed": true,
+      "details": "The gate workflow auto-promoted exact SHA-256 87627d6d6cdca34a8e9481b1a283db4de5292abb2f272a20f89fd9d80aa56734 with parent b88f66dbaf7e8036951ce4b013fcc16c7c0644ddd6e4496e08f06846566d9bcb; registry status is champion."
+    }
+  ],
+  "next_action": "No required solver action remains. The fully passing objective-488 exact hash is the current task 001 champion; further golf would require a new semantics-preserving representation to approach the approximate 94.97 cross-task budget."
+}
