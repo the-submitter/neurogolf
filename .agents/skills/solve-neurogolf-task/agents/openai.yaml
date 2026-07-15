@@ -1,4 +1,0 @@
-interface:
-  display_name: "Solve NeuroGolf Task"
-  short_description: "Solve one ARC task with the NeuroGolf gate"
-  default_prompt: "Use $solve-neurogolf-task to solve one prepared NeuroGolf task by number or ARC ID."

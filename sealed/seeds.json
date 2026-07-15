@@ -1,9 +1,0 @@
-{
-  "version": "sealed-v1",
-  "algorithm": "affine-mod-v1",
-  "start": 104729,
-  "stride": 15485863,
-  "modulus": 2147483647,
-  "count": 2048,
-  "namespace": "neurogolf-sealed-independent-v1"
-}
