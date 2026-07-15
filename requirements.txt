@@ -1,0 +1,9 @@
+# Versions specified by the NeuroGolf sample notebook.
+numpy==2.4.4
+onnx==1.21.0
+onnxruntime==1.24.4
+onnx-tool==1.0.1
+
+# Imported by utils/neurogolf_utils.py for notebook display and visualization.
+ipython==9.12.0
+matplotlib==3.10.7

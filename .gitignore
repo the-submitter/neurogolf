@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+build/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Data
+data/
+backup/
+
+# AI Agents
+.codex
+
+# Custom
+debug/
+# assets/
+queries.md
+/.env
+outputs_*/
+log_*
+*-lora/
+/logs/
+/results/
+
+# Runtime registries and SQLite sidecars (model/history directories remain visible)
+/champions/*.sqlite
+/champions/*.sqlite-*
