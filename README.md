@@ -136,3 +136,7 @@ unavailable.
 `codex app-server` and the reset-credit method are experimental and may change
 in future CLI releases. The supervisor launches its own persistent stdio app
 server, so a separately managed app-server daemon is not required.
+
+---
+
+This code repository was developed using Codex GPT-5.6 Sol.
