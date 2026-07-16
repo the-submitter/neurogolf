@@ -1,0 +1,4 @@
+Reading additional input from stdin...
+2026-07-16T17:17:54.526070Z ERROR codex_core::tools::router: error=exec_command failed for `/bin/bash -lc 'rm -f tasks/task010/task010-profile_*.json
+rm -rf tasks/task010/__pycache__
+ls -lh tasks/task010'`: CreateProcess { message: "Rejected(\"`/bin/bash -lc 'rm -f tasks/task010/task010-profile_*.json\\nrm -rf tasks/task010/__pycache__\\nls -lh tasks/task010'` rejected: blocked by policy\")" }

@@ -98,6 +98,17 @@ python3 codex_quota_supervisor.py --max-resets 3
 python3 run_codex_tasks.py
 ```
 
+The following capture shows tasks 001–010 running with `-n 10` while the
+supervisor monitors the remaining Codex quota in a separate terminal:
+
+![Ten parallel Codex task workers running while the quota supervisor monitors remaining usage](<assets/Screenshot from 2026-07-16 22-43-36.png>)
+
+As the run continues, the monitored quota reaches 0% remaining. The supervisor
+successfully consumes one reset credit, restores the quota to 100% remaining,
+and continues monitoring with two reset credits left:
+
+![Codex quota reaching zero and being successfully restored with one reset credit](<assets/Screenshot from 2026-07-16 22-58-05.png>)
+
 The supervisor polls every 30 seconds by default. When the selected `codex`
 rate-limit window reports 100% used (0% remaining), it confirms that a reset
 credit is available and calls

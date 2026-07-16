@@ -32,12 +32,5 @@ debug/
 # assets/
 queries.md
 /.env
-outputs_*/
-log_*
-*-lora/
-/logs/
-/results/
-
-# Runtime registries and SQLite sidecars (model/history directories remain visible)
-/champions/*.sqlite
-/champions/*.sqlite-*
+# /logs/
+# /results/

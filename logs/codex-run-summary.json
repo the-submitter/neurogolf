@@ -1,0 +1,93 @@
+{
+  "counts": {
+    "completed": 9,
+    "failed": 1
+  },
+  "finished_at": "2026-07-16T23:16:24.663096+05:30",
+  "model": "gpt-5.6-sol",
+  "parallelism": 10,
+  "profile": "neurogolf-high",
+  "reasoning": "high",
+  "tasks": [
+    {
+      "attempts": 1,
+      "elapsed_seconds": 914.3606061050014,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task001"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 1274.3966757669996,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task002"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 1867.4914961329996,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task003"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 3070.7150617180005,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task004"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 1942.510174395,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task005"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 624.1606680300001,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task006"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 1216.325491003,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task007"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 951.2742933139998,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task008"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 1651.4474711680004,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task009"
+    },
+    {
+      "attempts": 1,
+      "elapsed_seconds": 1418.398770535,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
+      "task": "task010"
+    }
+  ]
+}

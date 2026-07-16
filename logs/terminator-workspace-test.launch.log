@@ -1,0 +1,5 @@
+shell_context=terminator (unconfined)
+shell_pwd=/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf
+userns_check=ok
+codex_status=0
+temporary_file_cleanup=ok
