@@ -1,0 +1,12 @@
+# Reference copy only. Codex does not load named profiles from the project
+# .codex directory. The active copy belongs at:
+# $CODEX_HOME/neurogolf-high.config.toml
+
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+
+sandbox_mode = "workspace-write"
+approval_policy = "never"
+
+[sandbox_workspace_write]
+network_access = true

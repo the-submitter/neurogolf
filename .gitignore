@@ -25,7 +25,8 @@ data/
 backup/
 
 # AI Agents
-.codex
+.codex/*
+!.codex/neurogolf-high.config.toml
 
 # Custom
 debug/

@@ -56,6 +56,13 @@ Each process is started with:
 - only that task's prompt, loaded from `codex_task_prompt.md` with
   `{{TASK_NUMBER}}` replaced by the three-digit task number.
 
+The version-controlled `.codex/neurogolf-high.config.toml` is a reference copy
+of this named profile. Codex does not load named profiles from a repository's
+`.codex/` directory; the active copy must be installed as
+`$CODEX_HOME/neurogolf-high.config.toml` (normally
+`~/.codex/neurogolf-high.config.toml`). The `.gitignore` rules intentionally
+track this reference file while ignoring any other project-local Codex state.
+
 The prompt explicitly restricts each Codex process to `tasks/taskNNN/` and its
 corresponding `submission/taskNNN.onnx`. The runner creates task workspaces as
 needed. A successful submission causes that task to be skipped unless `--force`
