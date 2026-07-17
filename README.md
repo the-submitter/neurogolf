@@ -11,17 +11,36 @@ This repository includes two independent Python 3 scripts:
 Both scripts use only the Python standard library. They were checked against
 `codex-cli 0.144.2`.
 
-## Python environment
+## Installation
 
-The Codex task prompt directs agents to use the shared `~/.venv` environment.
-Install the scoring, ONNX, notebook, and visualization dependencies once before
-starting parallel workers:
+Install Git, Python 3, and the Codex CLI, then sign in to Codex before setting
+up this repository.
+
+Clone the repository together with ARC-GEN and all of its nested submodules:
 
 ```bash
+git clone --recurse-submodules https://github.com/the-submitter/neurogolf.git
+cd neurogolf
+```
+
+Create the shared Python environment and install the scoring, ONNX, notebook,
+and visualization dependencies:
+
+```bash
+python3 -m venv ~/.venv
+~/.venv/bin/python -m pip install --upgrade pip
 ~/.venv/bin/python -m pip install -r requirements.txt
 ~/.venv/bin/python -c "import IPython, matplotlib, numpy, onnx, onnx_tool, onnxruntime"
 ```
 
+Install the checked-in Codex profile reference as an active named profile:
+
+```bash
+mkdir -p ~/.codex
+cp .codex/neurogolf-high.config.toml ~/.codex/neurogolf-high.config.toml
+```
+
+The Codex task prompt directs agents to use the shared `~/.venv` environment.
 The versions are pinned to the official sample notebook where specified and to
 the currently verified `~/.venv` versions for its display dependencies. The
 runner and quota supervisor themselves remain standard-library-only scripts.
