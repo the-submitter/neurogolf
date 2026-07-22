@@ -1,6 +1,13 @@
 # CodexForge: Built by Codex for Codex
 
-A Codex-built orchestration system that launches parallel Codex agents to solve, validate, and optimize 400 ARC-AGI visual-reasoning tasks from Kaggle NeuroGolf as executable ONNX programs.
+A Codex-built deterministic orchestration system that runs long-lived parallel
+agents to solve, validate, and optimize 400 Kaggle NeuroGolf ARC-AGI tasks into
+verified ONNX programs.
+
+CodexForge is a deterministic control plane rather than a monolithic solving
+agent. It assigns one Kaggle NeuroGolf ARC task to each isolated Codex worker,
+manages the campaign lifecycle in Python, and preserves the evidence needed to
+verify each resulting ONNX program.
 
 ## How this was built with Codex
 
@@ -12,22 +19,36 @@ quota resetting optional and independent from the runner. The author also
 decided when completed tasks should be skipped or force-rerun and retained
 control over credentials, reset-credit use, and final submissions.
 
-Codex turned those decisions into the orchestration and demonstration system:
-it implemented subprocess concurrency, task locks, bounded retries, signal
-cleanup, per-task logs and summaries, stable-CLI selection, the persistent
-quota monitor, the replay/live dashboard, tests, setup automation, and
-documentation. Codex accelerated the repetitive engineering work—inspecting
-the repository, tracing failures across scripts and CLI versions, applying
-coordinated changes, and validating them—while the human author reviewed the
-behavior and made the scope, safety, and product trade-offs.
+Codex turned those decisions into a deterministic orchestration and
+demonstration system: it implemented subprocess concurrency, task locks,
+bounded retries and timeouts, signal cleanup, per-task logs and summaries,
+artifact checks, stable-CLI selection, the persistent quota monitor, the
+replay/live dashboard, tests, setup automation, and documentation. Codex
+accelerated repository inspection, cross-script debugging, coordinated
+implementation, and verification. The human author reviewed the behavior and
+made the scope, safety, competition-strategy, and product trade-offs.
 
 GPT-5.6 Sol is also the worker model selected by the runner. With high
 reasoning effort, each worker is prompted to inspect one task's examples and
 ARC-GEN generator, infer the transformation, build and test candidate ONNX
-graphs, compare their official cost and score, and document the best result.
-This makes the model's contribution auditable through task-local READMEs,
-event logs, result messages, and submission artifacts rather than presenting
-the final models as unexplained outputs.
+computational graphs, compare their official cost and score, debug failures,
+optimize the implementation, and document the best result. This makes the
+model's contribution auditable through task-local READMEs, event logs, result
+messages, and submission artifacts rather than presenting the final ONNX
+programs as unexplained outputs.
+
+## Why a deterministic control plane as the orchestration system?
+
+Codex workers may run for hours, while campaigns across 400 Kaggle NeuroGolf
+ARC tasks may last days or weeks. A parent reasoning agent should not remain
+active merely to poll workers.
+
+- Deterministic Python handles concurrency, locking, process supervision,
+  retries, timeouts, logs, artifact checks, summaries, and resumability.
+- Codex workers handle ARC reasoning, generator inspection, ONNX synthesis,
+  testing, debugging, and optimization.
+
+**Use Codex for reasoning; use deterministic software for orchestration.**
 
 This repository includes two independent Python 3 scripts:
 
@@ -59,17 +80,14 @@ The default **DEMO REPLAY** is an offline, quota-free 78-second timeline built
 from the committed READMEs and artifacts for tasks 001, 002, and 010. It does
 not require Codex, a Codex login, Kaggle, AWS credentials, the ONNX stack, or a
 network connection. Replay events are always visibly identified as replay;
-the final validation counts, costs, scores, graph details, and artifact states
-come from repository evidence rather than invented demo data.
+the final validation counts, costs, scores, ONNX computational-graph details,
+and artifact states come from repository evidence rather than invented demo
+data.
 
-The scripts support Ubuntu/Linux, WSL, and macOS with Python 3 and Git. To
-launch two real workers after installing the full environment and signing in
-to Codex, run:
-
-```bash
-./scripts/setup_demo.sh --full
-./scripts/launch_demo.sh --live --tasks 11-12 --parallel 2
-```
+The scripts support Ubuntu/Linux, WSL, and macOS with Python 3 and Git. Real
+worker runs have additional Codex CLI, login, named-profile, and full Python
+environment prerequisites. Complete the ordered **Live-mode prerequisites**
+under Installation before using `--live`.
 
 The launcher defaults to the offline replay even when `--tasks` is supplied.
 Always pass `--live` to start real workers; for example, task001 and task006
@@ -85,32 +103,27 @@ other terminals, use:
 ./scripts/launch_demo.sh --attach
 ```
 
-Live mode never starts the quota supervisor unless `--with-supervisor` is
-given. That explicit supervisor still runs with `--dry-run`; reset-credit
-redemption requires the additional `--allow-reset-credit` flag. Replay and
-attach modes never redeem reset credits.
-
-For a live launch, the dashboard baselines existing logs and the prior run
-summary, so a forced rerun begins queued/running instead of inheriting an old
-completed state. Attach mode intentionally displays the latest historical
+Attach mode intentionally displays the latest historical
 state before new events arrive.
 
 ```text
-Task selection
-      ↓
-Parallel Codex workers
-      ↓
-Task-local builders and ONNX graphs
-      ↓
-Validation and official scoring
-      ↓
-Submission artifacts and run summary
+Campaign and task selection
+            ↓
+Deterministic Python control plane
+(concurrency, locks, supervision, retries, timeouts, logs)
+            ↓
+Long-lived parallel Codex workers
+(ARC reasoning, generator inspection, ONNX synthesis and debugging)
+            ↓
+Task-local validation and official scoring
+            ↓
+Verified ONNX programs, artifact checks, summaries, and resumable state
 ```
 
 ## Installation
 
-Install Git and Python 3 before setting up this repository. The Codex CLI and a
-Codex login are needed only for live mode, not for the default replay.
+Install Git and Python 3 before setting up this repository. The default replay
+needs neither Codex nor a Codex login.
 
 Clone the repository together with ARC-GEN and all of its nested submodules:
 
@@ -118,6 +131,51 @@ Clone the repository together with ARC-GEN and all of its nested submodules:
 git clone --recurse-submodules https://github.com/the-submitter/neurogolf.git
 cd neurogolf
 ```
+
+### Live-mode prerequisites
+
+> **Required before the first full live setup:** install the Codex CLI, sign in
+> to Codex, and activate the repository's `neurogolf-high` named profile. The
+> checked-in file is only a reference copy; Codex does not load named profiles
+> directly from the project's `.codex/` directory.
+
+After cloning the repository, verify the CLI/login and copy the profile into
+`$CODEX_HOME` (normally `~/.codex`):
+
+```bash
+codex -V
+codex login
+
+mkdir -p ~/.codex
+cp .codex/neurogolf-high.config.toml ~/.codex/neurogolf-high.config.toml
+```
+
+If `CODEX_HOME` is set to another directory, copy the profile there instead:
+
+```bash
+mkdir -p "$CODEX_HOME"
+cp .codex/neurogolf-high.config.toml "$CODEX_HOME/neurogolf-high.config.toml"
+```
+
+Only after those live-mode prerequisites are ready, install the full Python
+environment and launch real workers:
+
+```bash
+./scripts/setup_demo.sh --full
+./scripts/launch_demo.sh --live --tasks 11-12 --parallel 2
+```
+
+Live mode never starts the quota supervisor unless `--with-supervisor` is
+given. That explicit supervisor still runs with `--dry-run`; reset-credit
+redemption requires the additional `--allow-reset-credit` flag. Replay and
+attach modes never redeem reset credits.
+
+For a live launch, the dashboard baselines existing logs and the prior run
+summary, so a forced rerun begins queued/running instead of inheriting an old
+completed state.
+
+The profile and Codex login are not required for the offline replay setup
+below.
 
 Prepare the repository-local replay environment. This is idempotent and skips
 the heavyweight scoring and ONNX packages:
@@ -127,7 +185,8 @@ the heavyweight scoring and ONNX packages:
 ```
 
 Install the full dependency set before live worker runs and whenever rebuilding
-or validating ONNX models:
+or validating ONNX programs. For live mode, complete the profile installation
+above first:
 
 ```bash
 ./scripts/setup_demo.sh --full
@@ -154,20 +213,11 @@ are pinned to the official sample notebook where specified and to the verified
 environment for its display dependencies. The runner and quota supervisor also
 remain standard-library-only scripts.
 
-Live mode requires Codex. Install the checked-in profile reference manually as
-an active named profile; the setup script deliberately does not alter user
-configuration:
-
-```bash
-mkdir -p ~/.codex
-cp .codex/neurogolf-high.config.toml ~/.codex/neurogolf-high.config.toml
-```
-
 The dashboard supports `q`, `p`, `r`, `+`, `-`, `l`, and `a` for quitting,
 pausing/restarting or changing replay speed, and toggling activity/artifacts.
 Use `--no-color` for terminals or recordings that do not support colour.
 
-### Turn completed live tasks into a replay
+### Turn completed live tasks into an offline replay
 
 Live runs do not automatically rewrite replay fixtures. They update task
 READMEs, ONNX files, results, and logs, but an explicit snapshot is required
@@ -358,6 +408,17 @@ unavailable.
 `codex app-server` and the reset-credit method are experimental and may change
 in future CLI releases. The supervisor launches its own persistent stdio app
 server, so a separately managed app-server daemon is not required.
+
+## Future applications
+
+The same control-plane pattern can support other bounded, independently
+verifiable engineering campaigns, such as compiler optimization sweeps,
+repository migration batches, benchmark pipelines, and artifact-optimization
+queues. The transferable idea is the separation of deterministic lifecycle
+management from task-specific Codex reasoning, backed by explicit validators
+and durable artifacts. CodexForge does not claim general AGI or arbitrary
+unseen ARC solving; its present scope is the 400 Kaggle NeuroGolf ARC tasks and
+their verified ONNX programs.
 
 ## License and third-party material
 
