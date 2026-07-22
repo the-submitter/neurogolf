@@ -28,6 +28,7 @@ from demo.codexforge_dashboard import (
     load_fixture,
     parse_args,
     parse_jsonl_event,
+    parse_runner_line,
     redact_text,
     run_replay,
     run_summary_stamp,
@@ -149,6 +150,17 @@ def test_no_color_rendering_has_no_color_sequences() -> None:
     output = stream.getvalue()
     assert "\x1b[" not in output
     assert "DEMO REPLAY" in output
+
+
+def test_runner_startup_line_populates_live_model_metadata() -> None:
+    state = DashboardState(mode="live", workers={}, parallel=2)
+    parse_runner_line(
+        "selected 2 runnable task(s), parallelism=2, "
+        "model=gpt-5.6-sol, reasoning=high",
+        state,
+    )
+    assert state.model == "gpt-5.6-sol"
+    assert state.reasoning == "high"
 
 
 def test_replay_makes_no_network_calls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

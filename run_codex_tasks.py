@@ -16,6 +16,7 @@ import shlex
 import shutil
 import signal
 import subprocess
+import tempfile
 import threading
 import time
 from typing import Iterable
@@ -77,11 +78,16 @@ class TaskResult:
 
 class Runner:
     def __init__(
-        self, args: argparse.Namespace, repo_root: Path, prompt_template: str
+        self,
+        args: argparse.Namespace,
+        repo_root: Path,
+        prompt_template: str,
+        model_catalog_path: Path | None = None,
     ) -> None:
         self.args = args
         self.repo_root = repo_root
         self.prompt_template = prompt_template
+        self.model_catalog_path = model_catalog_path
         self.stop_event = threading.Event()
         self.interrupted = False
         self._print_lock = threading.Lock()
@@ -141,15 +147,26 @@ class Runner:
             self.args.profile,
             "--model",
             self.args.model,
-            "--config",
-            f'model_reasoning_effort="{self.args.reasoning}"',
-            "--cd",
-            str(self.repo_root),
-            "--json",
-            "--output-last-message",
-            str(result_path),
-            prompt,
         ]
+        if self.model_catalog_path is not None:
+            command.extend(
+                [
+                    "--config",
+                    f"model_catalog_json={json.dumps(str(self.model_catalog_path))}",
+                ]
+            )
+        command.extend(
+            [
+                "--config",
+                f'model_reasoning_effort="{self.args.reasoning}"',
+                "--cd",
+                str(self.repo_root),
+                "--json",
+                "--output-last-message",
+                str(result_path),
+                prompt,
+            ]
+        )
         return command, events_path, stderr_path
 
     def run_task(self, task: str) -> TaskResult:
@@ -376,6 +393,52 @@ def _load_prompt_template(repo_root: Path) -> str:
     return prompt_template
 
 
+def _create_bundled_model_catalog(
+    codex_bin: str, directory: Path, selected_model: str
+) -> tuple[Path | None, str | None]:
+    """Export the selected CLI's catalog so workers avoid a shared cache race."""
+
+    try:
+        completed = subprocess.run(
+            [codex_bin, "debug", "models", "--bundled"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return None, f"could not export bundled Codex model catalog: {error}"
+    if completed.returncode != 0:
+        detail = completed.stderr.strip().splitlines()
+        suffix = f": {detail[-1]}" if detail else ""
+        return None, f"could not export bundled Codex model catalog{suffix}"
+    try:
+        payload = json.loads(completed.stdout)
+        models = payload.get("models") if isinstance(payload, dict) else None
+        if not isinstance(models, list) or not all(
+            isinstance(item, dict) for item in models
+        ):
+            raise ValueError("catalog does not contain a models array")
+        if not any(item.get("slug") == selected_model for item in models):
+            raise ValueError(f"selected model {selected_model!r} is not bundled")
+    except (json.JSONDecodeError, ValueError) as error:
+        return None, f"invalid bundled Codex model catalog: {error}"
+
+    descriptor, raw_path = tempfile.mkstemp(
+        prefix=".codex-model-catalog-", suffix=".json", dir=directory
+    )
+    path = Path(raw_path)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, separators=(",", ":"))
+            handle.write("\n")
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
+    return path, None
+
+
 def _write_summary(path: Path, results: list[TaskResult], args: argparse.Namespace) -> None:
     counts: dict[str, int] = {}
     for result in results:
@@ -500,7 +563,15 @@ def main() -> int:
                 runnable.append(task)
         tasks = runnable
 
-    runner = Runner(args, repo_root, prompt_template)
+    model_catalog_path: Path | None = None
+    if tasks and not args.dry_run:
+        model_catalog_path, catalog_warning = _create_bundled_model_catalog(
+            args.codex_bin, repo_root / "logs", args.model
+        )
+        if catalog_warning:
+            print(f"warning: {catalog_warning}; falling back to the shared model cache")
+
+    runner = Runner(args, repo_root, prompt_template, model_catalog_path)
     for caught_signal in (signal.SIGINT, signal.SIGTERM):
         signal.signal(
             caught_signal,
@@ -530,6 +601,8 @@ def main() -> int:
     finally:
         runner.request_stop()
         runner.terminate_active()
+        if model_catalog_path is not None:
+            model_catalog_path.unlink(missing_ok=True)
 
     summary_path = repo_root / "logs" / "codex-run-summary.json"
     _write_summary(summary_path, results, args)

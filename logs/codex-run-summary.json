@@ -1,9 +1,8 @@
 {
   "counts": {
-    "cancelled": 1,
-    "completed": 1
+    "completed": 2
   },
-  "finished_at": "2026-07-22T23:14:10.964207+05:30",
+  "finished_at": "2026-07-23T01:18:25.230840+05:30",
   "model": "gpt-5.6-sol",
   "parallelism": 2,
   "profile": "neurogolf-high",
@@ -11,15 +10,15 @@
   "tasks": [
     {
       "attempts": 1,
-      "elapsed_seconds": 1177.369936735,
-      "message": "runner stopped",
-      "returncode": -15,
-      "status": "cancelled",
+      "elapsed_seconds": 2062.5047316750006,
+      "message": "",
+      "returncode": 0,
+      "status": "completed",
       "task": "task001"
     },
     {
       "attempts": 1,
-      "elapsed_seconds": 286.06856940300077,
+      "elapsed_seconds": 692.1680767839989,
       "message": "",
       "returncode": 0,
       "status": "completed",

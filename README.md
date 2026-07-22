@@ -40,8 +40,13 @@ This repository includes two independent Python 3 scripts:
 Both scripts use only the Python standard library. They prefer the stable Codex
 standalone installation at `~/.codex/packages/standalone/current/bin/codex`
 when `codex` on `PATH` resolves to a VS Code preview build. This avoids sharing
-preview-only model-cache schemas with batch workers; `--codex-bin` can still
-select a different executable explicitly.
+the preview executable with batch workers; `--codex-bin` can still select a
+different executable explicitly. Before a real run, the task runner exports
+the selected CLI's bundled model catalog to an ephemeral ignored file and
+passes it through `model_catalog_json`. Workers therefore do not parse the
+shared `~/.codex/models_cache.json`, which may simultaneously be written in a
+different schema by the VS Code extension. The temporary catalog is removed
+when the runner exits.
 
 ## 90-second demo
 
@@ -220,6 +225,14 @@ runner usable without the supervisor. Change them with
 `--rate-limit-retries` and `--retry-delay`. A complete machine-readable run
 summary is written to `logs/codex-run-summary.json`. Ctrl-C terminates active
 Codex process groups and records the partial summary.
+
+Older stderr logs may contain a `codex_models_manager` message about a missing
+`supports_reasoning_summaries` field. This is a non-fatal schema mismatch
+caused when stable and preview Codex builds share `~/.codex/models_cache.json`;
+it is not a Python dependency problem. Deleting that cache is only temporary
+because either Codex process can recreate it. The runner's ephemeral bundled
+catalog bypasses the shared file, so new worker runs do not require cache
+deletion. Existing stderr files remain historical until that task is rerun.
 
 ## Quota supervisor
 

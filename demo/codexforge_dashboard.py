@@ -27,6 +27,8 @@ from typing import Any, Iterable, TextIO
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIXTURE = REPO_ROOT / "demo" / "fixtures" / "codexforge_demo.json"
+DEFAULT_LIVE_MODEL = "gpt-5.6-sol"
+DEFAULT_LIVE_REASONING = "high"
 VALID_PHASES = {
     "queued",
     "inspecting examples",
@@ -753,6 +755,14 @@ def parse_quota_line(line: str, state: DashboardState) -> None:
         state.reset_credits = credits.group(1)
 
 
+def parse_runner_line(line: str, state: DashboardState) -> None:
+    """Update live metadata emitted by run_codex_tasks.py at startup."""
+    match = re.search(r"\bmodel=([^,\s]+),\s*reasoning=([^,\s]+)", line)
+    if match:
+        state.model = match.group(1)
+        state.reasoning = match.group(2)
+
+
 def _reader_thread(stream: TextIO, output: queue.Queue[str]) -> None:
     try:
         for line in stream:
@@ -820,7 +830,13 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
         )
         for task in task_names
     }
-    state = DashboardState(mode="live" if live else "attached", workers=workers, parallel=args.parallel)
+    state = DashboardState(
+        mode="live" if live else "attached",
+        workers=workers,
+        parallel=args.parallel,
+        model=DEFAULT_LIVE_MODEL if live else "N/A",
+        reasoning=DEFAULT_LIVE_REASONING if live else "N/A",
+    )
     commands = build_live_commands(args, root) if live else []
     if commands:
         state.command = shlex.join(commands[0])
@@ -908,6 +924,7 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
                     clean = redact_text(line)
                     if clean:
                         parse_quota_line(clean, state)
+                        parse_runner_line(clean, state)
                         state.activities.append(clean)
                         changed = True
                 summary_stamp = run_summary_stamp(root)

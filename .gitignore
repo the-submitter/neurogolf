@@ -41,3 +41,4 @@ prompt.md
 /logs/quota-supervisor-state.json
 /logs/quota-supervisor-state.json.lock
 /logs/quota-supervisor-app-server.stderr
+/logs/.codex-model-catalog-*.json

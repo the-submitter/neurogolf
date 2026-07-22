@@ -2,64 +2,66 @@
 
 ## Rule
 
-The input is a 3×3 stencil drawn in one nonzero color. If `M` is its binary
-foreground mask, the 9×9 output foreground is the Kronecker square
+The input is a 3×3 stencil in one nonzero color. If `M` is its binary
+foreground mask, the 9×9 output is its Kronecker square:
 
 ```text
-Y[3 * a + i, 3 * b + j] = M[a, b] * M[i, j].
+Y[3 * a + p, 3 * b + q] = M[a, b] * M[p, q].
 ```
 
-The foreground color is preserved, and every other cell in the logical 9×9
-output is background. The remainder of the fixed 30×30 NeuroGolf tensor is
-zero in every channel.
+The foreground color is preserved, zeros are background, and the unused part
+of the fixed 30×30 NeuroGolf tensor contains no active channel.
 
-## ONNX implementation
+## Final ONNX graph
 
-`build.py` creates an opset-12, IR-v10 graph with seven nodes:
+`build.py` emits an opset-12 model containing one terminal `Einsum`. There are
+no scored intermediate tensors.
 
-1. `Slice` extracts the input's 3×3 background plane.
-2. `Less(0.5)` converts its zero foreground cells into a nine-element boolean
-   mask. A `Cast` converts that mask to float16.
-3. A stride-3 `ConvTranspose` uses the stencil as both data and dynamic 3×3
-   kernel. Its `-0.5` bias produces positive logits exactly on `M ⊗ M` and
-   negative logits on the rest of the logical 9×9 grid.
-4. `Einsum` sums each input color plane while applying signs `[-1,+1,…,+1]`.
-   Its float16 cast is a dynamic 1×1 color kernel: background is negative and
-   the active foreground color is positive.
-5. The final `ConvTranspose` multiplies the spatial logits by that color
-   kernel. Negative trailing pads create the required 30×30 output directly;
-   the extended area is exactly zero under the scorer's strict `> 0` test.
+The graph uses a homogeneous coordinate row
+`[1, floor(r/3), r mod 3]` for each logical output coordinate. Two small
+quadratic factors turn either base-3 digit into exact Lagrange indicators for
+coordinates 0, 1, and 2. Sharing the role index between the row and column
+relations selects the two outer digits together or the two inner digits
+together. This gives the signed spatial test
 
-The boolean mask saves nine scored bytes over the earlier float16 affine
-encoding while retaining exact behavior for empty, full, and single-cell
-stencils as well as the generator's normal 2–8 foreground-cell range.
+```text
+signed_stencil[outer_row, outer_col]
++ signed_stencil[inner_row, inner_col].
+```
+
+Background has sign `+2` and the foreground colors have sign `-1`. Therefore
+the spatial test is negative exactly when both selected stencil cells are
+foreground. Reusing the same sign vector on the output channel makes the
+foreground channel positive in that case and makes background positive in all
+other cases. Inactive foreground channels are multiplied by a zero channel
+count. The zero coordinate rows 9–29 suppress the padded output tail.
 
 ## Official metric
 
-Using the unmodified scorer in `utils/neurogolf_utils.py` with ONNX Runtime
-graph optimizations disabled:
+Measured with the unmodified `utils/neurogolf_utils.py`, after its sanitizer,
+with ONNX Runtime graph optimizations disabled:
 
 | Component | Cost |
 | --- | ---: |
-| Intermediate tensors | 285 bytes |
-| Initializer parameters | 20 elements |
-| Objective (`memory + parameters`) | **305** |
-| Points (`25 - ln(305)`) | **19.27968822339259** |
-| Serialized model size | 728 bytes |
+| Intermediate tensors | **0 bytes** |
+| Initializer parameters | **129** |
+| Objective (`memory + parameters`) | **129** |
+| Points (`25 - ln(129)`) | **20.140187595638327** |
+| Serialized model size | **1,097 bytes** |
 
-The intermediate-memory breakdown is 36 bytes for the cropped float32 plane,
-9 for the boolean mask, 18 for its float16 cast, 162 for the float16 9×9
-spatial logits, 40 for the float32 signed color vector, and 20 for its float16
-cast. Parameters are eight slice bounds, two scalar thresholds/biases, and ten
-color signs.
+The 129 parameters are a 10-value channel-sign vector, a 30×3 coordinate
+table, a 2×3×3 digit basis, a 3×3 Lagrange decoder, and a two-value inner-role
+selector. Compared with the previous model, the objective falls from 305 to
+129 and the score rises from 19.27968822339259 by about 0.86050 points.
 
 ## Validation and build
 
-The final model passes all 268 examples in `kaggle_tasks_data/task001.json`.
-It was also exhaustively checked on every one of the 512 possible binary 3×3
-stencils for each foreground color 1–9 (4,608 cases), with zero failures.
+The final model passed all 268 examples in
+`kaggle_tasks_data/task001.json` through ONNX Runtime with graph optimizations
+disabled. It also passes `onnx.checker.check_model(..., full_check=True)`, the
+official sanitizer, and the official profiler-based scorer.
 
-Rebuild both identical artifacts with:
+Rebuild both byte-identical artifacts with:
 
 ```bash
 ~/.venv/bin/python tasks/task001/build.py

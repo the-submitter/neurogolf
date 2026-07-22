@@ -32,7 +32,7 @@ The official runner thresholds at `> 0`.  These expressions give:
 They also suppress the unpaired right panel at output columns 4–6 without a
 bias: an isolated black gives `(0, -1)` and an isolated blue gives `(-1, 0)`.
 Only five kernel entries are nonzero, although ONNX `Conv` requires the dense
-logical weight shape `[10, 5, 1, 2]`.  A sparse initializer was considered,
+logical weight shape `[10, 5, 1, 2]`.  A sparse convolution initializer was considered,
 but ONNX 1.21 full shape inference—the validation path called by the official
 scorer—rejects sparse tensors as direct `Conv` weights.  The valid dense tensor
 therefore costs 100 parameters.  A second node that reduced the logical kernel
@@ -53,13 +53,22 @@ memory-plus-parameter objective:
 | design | limiting cost/issue |
 |---|---|
 | One-node grouped `Conv` (selected) | 0 intermediate bytes + 100 parameters |
-| `Einsum` over aligned panel tensors | alignment requires `Slice`/reshape intermediates; two minimal 3×3 float tensors alone cost 72 bytes before the equation weights and output assembly |
+| Dense direct `Einsum` | the gray separator can supply the red threshold, but the direct `[10,10,30,30]` routing tensor costs 90,000 parameters |
+| Sparse direct `Einsum` | needs only 15 stored coefficients and runs in ONNX Runtime, but ONNX 1.21 full shape inference treats the sparse operand as rankless and rejects the four-index equation |
+| Sliced/factorized `Einsum` | alignment requires charged slice/reshape intermediates or dense coordinate factors; neither beats 100 under the official counter |
 | Boolean `Slice`/`And`/`Not`/padding | exact, but costs 336 intermediate bytes + 33 parameters = 369 |
 | `group=5`/`group=10` convolution | cheaper but cannot connect blue input channel 1 to red output channel 2 |
 | Sparse convolution weights | only 5 stored values, but rejected by the scorer's full ONNX shape check |
 
 This is a lower bound for the exact single-`Conv` family, not a claim of a
-global lower bound over every ONNX operator and opset.
+global lower bound over every ONNX operator and opset.  A separate direct
+`Einsum("bchw,ocwv->bohv")` experiment confirmed that the transformation is
+linear without an explicit bias: black uses the two aligned channel-0 values,
+and red uses the two aligned channel-1 values minus the channel-5 gray
+separator.  Its sparse routing tensor has 15 nonzeros, but
+`onnx.checker.check_model(..., full_check=True)` rejects it because current
+ONNX shape inference reports sparse Einsum initializers with rank zero.  A
+dense version is valid but far more expensive than the selected convolution.
 
 An archived Boolean `Slice`/`Cast`/`And`/`Not` design claimed cost 18 based on
 counting only two Boolean tensors.  Rechecking that design with the attached
@@ -95,7 +104,7 @@ Final local results:
 - Estimated official task score: `25 - ln(100) = 20.394830`
 - ONNX file size: 648 bytes
 - Graph: one `Conv` node, IR version 10, opset 10
-- Reverified: 2026-07-22 with ONNX 1.21.0 and ONNX Runtime 1.24.4
+- Reverified: 2026-07-23 with ONNX 1.21.0 and ONNX Runtime 1.24.4
 
 This improves the previous bias-based convolution from cost 110 and score
 20.299520 while preserving the same exact transformation.
