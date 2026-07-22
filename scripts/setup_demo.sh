@@ -73,6 +73,8 @@ REQUIRED_FILES=(
   demo/codexforge_dashboard.py
   demo/build_replay_fixture.py
   demo/fixtures/codexforge_demo.json
+  scripts/map_tasks.py
+  scripts/generate_task_principles.py
   utils/task_principles.json
 )
 for required_file in "${REQUIRED_FILES[@]}"; do
@@ -103,6 +105,9 @@ cat <<'EOF'
 
 Ready:
   ./scripts/launch_demo.sh
+
+For live workers, first install the full environment and then launch explicitly:
+  ./scripts/setup_demo.sh --full
   ./scripts/launch_demo.sh --live --tasks 11-12 --parallel 2
 
 Live mode requires a Codex login and this manual profile installation:

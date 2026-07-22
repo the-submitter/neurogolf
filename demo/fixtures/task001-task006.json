@@ -2,10 +2,10 @@
   "schema_version": 1,
   "title": "CodexForge: Built by Codex for Codex",
   "description": "Authored replay timeline whose final facts are extracted from committed repository evidence.",
-  "duration_seconds": 78,
+  "duration_seconds": 68,
   "model": "gpt-5.6-sol",
   "reasoning": "high",
-  "parallel_limit": 3,
+  "parallel_limit": 2,
   "tasks": [
     {
       "task": "task001",
@@ -42,77 +42,39 @@
       "evidence": "tasks/task001/README.md"
     },
     {
-      "task": "task002",
-      "task_id": "00d62c1b",
-      "principle": "honeypots",
+      "task": "task006",
+      "task_id": "0520fde7",
+      "principle": "intersect",
       "metrics": {
         "validation_examples": {
-          "passed": 268,
-          "total": 268
+          "passed": 266,
+          "total": 266
         },
-        "intermediate_memory_bytes": 15464,
-        "parameters": 3658,
-        "objective_cost": 19122,
-        "estimated_score": 15.141405,
-        "serialized_model_bytes": 4810
+        "intermediate_memory_bytes": 0,
+        "parameters": 100,
+        "objective_cost": 100,
+        "estimated_score": 20.39483,
+        "serialized_model_bytes": 648,
+        "onnx_node_count": 1
       },
       "artifacts": [
         {
-          "path": "tasks/task002/README.md"
+          "path": "tasks/task006/README.md"
         },
         {
-          "path": "submission/task002.onnx"
+          "path": "submission/task006.onnx"
         },
         {
-          "path": "results/task002.md"
+          "path": "results/task006.md"
         },
         {
-          "path": "logs/task002.events.jsonl"
+          "path": "logs/task006.events.jsonl"
         },
         {
-          "path": "tasks/task002/task002.onnx"
+          "path": "tasks/task006/task006.onnx"
         }
       ],
-      "evidence": "tasks/task002/README.md"
-    },
-    {
-      "task": "task010",
-      "task_id": "08ed6ac7",
-      "principle": "barchart",
-      "metrics": {
-        "intermediate_memory_bytes": 128,
-        "parameters": 207,
-        "objective_cost": 335,
-        "estimated_score": 19.185869,
-        "serialized_model_bytes": 1671,
-        "validation_examples": {
-          "passed": 265,
-          "total": 265
-        },
-        "exhaustive_cases": {
-          "passed": 3024,
-          "total": 3024
-        },
-        "onnx_node_count": 4
-      },
-      "artifacts": [
-        {
-          "path": "tasks/task010/README.md"
-        },
-        {
-          "path": "submission/task010.onnx"
-        },
-        {
-          "path": "results/task010.md"
-        },
-        {
-          "path": "logs/task010.events.jsonl"
-        },
-        {
-          "path": "tasks/task010/task010.onnx"
-        }
-      ],
-      "evidence": "tasks/task010/README.md"
+      "evidence": "tasks/task006/README.md"
     }
   ],
   "events": [
@@ -121,7 +83,7 @@
       "task": null,
       "phase": "queued",
       "status": "queued",
-      "action": "Replay preflight passed; selected 3 repository-backed task stories"
+      "action": "Replay preflight passed; selected 2 repository-backed task stories"
     },
     {
       "at": 3,
@@ -132,14 +94,7 @@
     },
     {
       "at": 5,
-      "task": "task002",
-      "phase": "inspecting examples",
-      "status": "running",
-      "action": "Worker activated; inspecting task examples and existing artifacts"
-    },
-    {
-      "at": 7,
-      "task": "task010",
+      "task": "task006",
       "phase": "inspecting examples",
       "status": "running",
       "action": "Worker activated; inspecting task examples and existing artifacts"
@@ -153,17 +108,10 @@
     },
     {
       "at": 13,
-      "task": "task002",
+      "task": "task006",
       "phase": "reading generator",
       "status": "running",
-      "action": "Reading ARC-GEN generator task_00d62c1b.py (honeypots)"
-    },
-    {
-      "at": 15,
-      "task": "task010",
-      "phase": "reading generator",
-      "status": "running",
-      "action": "Reading ARC-GEN generator task_08ed6ac7.py (barchart)"
+      "action": "Reading ARC-GEN generator task_0520fde7.py (intersect)"
     },
     {
       "at": 19,
@@ -173,18 +121,11 @@
       "action": "Inferring the Kronecker-square fractal rule"
     },
     {
-      "at": 22,
-      "task": "task002",
+      "at": 21,
+      "task": "task006",
       "phase": "inferring rule",
       "status": "running",
-      "action": "Inferring green pot-border detection and yellow interior fill"
-    },
-    {
-      "at": 24,
-      "task": "task010",
-      "phase": "inferring rule",
-      "status": "running",
-      "action": "Inferring bar-height ranking from four distinct columns"
+      "action": "Inferring the documented intersect transformation"
     },
     {
       "at": 28,
@@ -194,18 +135,11 @@
       "action": "Building a single terminal Einsum with shared coordinate factors"
     },
     {
-      "at": 31,
-      "task": "task002",
+      "at": 30,
+      "task": "task006",
       "phase": "building ONNX",
       "status": "running",
-      "action": "Building quantized template detectors with QLinearConv"
-    },
-    {
-      "at": 34,
-      "task": "task010",
-      "phase": "building ONNX",
-      "status": "running",
-      "action": "Building a four-node Einsum + TopK + Gather graph"
+      "action": "Building the documented optimized ONNX graph"
     },
     {
       "at": 38,
@@ -215,18 +149,11 @@
       "action": "Validating the ONNX program against 268 packaged examples"
     },
     {
-      "at": 42,
-      "task": "task002",
+      "at": 40,
+      "task": "task006",
       "phase": "validating examples",
       "status": "running",
-      "action": "Validating the ONNX program against 268 packaged examples"
-    },
-    {
-      "at": 45,
-      "task": "task010",
-      "phase": "validating examples",
-      "status": "running",
-      "action": "Validating the ONNX program against 265 packaged examples"
+      "action": "Validating the ONNX program against 266 packaged examples"
     },
     {
       "at": 50,
@@ -236,15 +163,8 @@
       "action": "Profiling documented memory, parameters, objective cost, and score"
     },
     {
-      "at": 54,
-      "task": "task002",
-      "phase": "profiling official score",
-      "status": "running",
-      "action": "Profiling documented memory, parameters, objective cost, and score"
-    },
-    {
-      "at": 57,
-      "task": "task010",
+      "at": 52,
+      "task": "task006",
       "phase": "profiling official score",
       "status": "running",
       "action": "Profiling documented memory, parameters, objective cost, and score"
@@ -257,21 +177,14 @@
       "action": "Verified model, submission, result, event log, and task README are preserved"
     },
     {
-      "at": 68,
-      "task": "task002",
+      "at": 63,
+      "task": "task006",
       "phase": "completed",
       "status": "completed",
       "action": "Verified model, submission, result, event log, and task README are preserved"
     },
     {
-      "at": 73,
-      "task": "task010",
-      "phase": "completed",
-      "status": "completed",
-      "action": "Verified model, submission, result, event log, and task README are preserved"
-    },
-    {
-      "at": 76,
+      "at": 66,
       "task": null,
       "phase": "completed",
       "status": "completed",

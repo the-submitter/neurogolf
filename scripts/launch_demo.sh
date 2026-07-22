@@ -41,6 +41,11 @@ if [[ "${MODE}" == "live" ]]; then
     echo "Install it manually: cp .codex/neurogolf-high.config.toml \"${CODEX_HOME:-${HOME}/.codex}/neurogolf-high.config.toml\"" >&2
     exit 1
   fi
+  if ! .venv/bin/python -c 'import IPython, matplotlib, numpy, onnx, onnx_tool, onnxruntime' >/dev/null 2>&1; then
+    echo "Live mode requires the full repository-local Python environment." >&2
+    echo "Install it with: ./scripts/setup_demo.sh --full" >&2
+    exit 1
+  fi
 fi
 
 # Activate the repository-local environment without changing shell startup files.

@@ -110,8 +110,64 @@ def _number(text: str) -> int | None:
 
 
 def _decimal(text: str) -> float | None:
-    match = re.search(r"\d[\d,]*(?:\.\d+)?", text)
-    return float(match.group(0).replace(",", "")) if match else None
+    matches = re.findall(r"\d[\d,]*(?:\.\d+)?", text)
+    return float(matches[-1].replace(",", "")) if matches else None
+
+
+def _record_metric(metrics: dict[str, Any], label: str, value: str) -> None:
+    label = label.lower().strip().strip("*")
+    value = value.strip().strip("*")
+    pair = re.search(r"(\d[\d,]*)\s*/\s*(\d[\d,]*)", value)
+    if any(
+        term in label
+        for term in (
+            "supplied examples",
+            "packaged examples",
+            "provided examples",
+            "exact validation",
+        )
+    ) and pair:
+        metrics["validation_examples"] = {
+            "passed": int(pair.group(1).replace(",", "")),
+            "total": int(pair.group(2).replace(",", "")),
+        }
+    elif "exhaustive" in label and pair:
+        metrics["exhaustive_cases"] = {
+            "passed": int(pair.group(1).replace(",", "")),
+            "total": int(pair.group(2).replace(",", "")),
+        }
+    elif (
+        any(
+            term in label
+            for term in (
+                "intermediate tensor",
+                "intermediate memory",
+            )
+        )
+        or label == "memory"
+    ):
+        value_number = _number(value)
+        if value_number is not None:
+            metrics["intermediate_memory_bytes"] = value_number
+    elif (
+        any(term in label for term in ("initializer parameters", "parameter count"))
+        or label == "parameters"
+    ):
+        value_number = _number(value)
+        if value_number is not None:
+            metrics["parameters"] = value_number
+    elif "score" in label or label.startswith("points"):
+        value_number = _decimal(value)
+        if value_number is not None:
+            metrics["estimated_score"] = value_number
+    elif "cost" in label or label.startswith("objective"):
+        value_number = _number(value)
+        if value_number is not None:
+            metrics["objective_cost"] = value_number
+    elif "serialized" in label or "onnx file size" in label:
+        value_number = _number(value)
+        if value_number is not None:
+            metrics["serialized_model_bytes"] = value_number
 
 
 def extract_readme_metrics(text: str) -> dict[str, Any]:
@@ -127,40 +183,20 @@ def extract_readme_metrics(text: str) -> dict[str, Any]:
         label, value = cells[0].lower(), cells[1]
         if not value or set(value) <= {"-", ":", " "}:
             continue
-        pair = re.search(r"(\d[\d,]*)\s*/\s*(\d[\d,]*)", value)
-        if any(term in label for term in ("supplied examples", "packaged examples", "provided examples")) and pair:
-            metrics["validation_examples"] = {
-                "passed": int(pair.group(1).replace(",", "")),
-                "total": int(pair.group(2).replace(",", "")),
-            }
-        elif "exhaustive" in label and pair:
-            metrics["exhaustive_cases"] = {
-                "passed": int(pair.group(1).replace(",", "")),
-                "total": int(pair.group(2).replace(",", "")),
-            }
-        elif any(term in label for term in ("intermediate tensors", "intermediate memory")) or label == "memory":
-            value_number = _number(value)
-            if value_number is not None:
-                metrics["intermediate_memory_bytes"] = value_number
-        elif any(term in label for term in ("initializer parameters", "parameter count")) or label == "parameters":
-            value_number = _number(value)
-            if value_number is not None:
-                metrics["parameters"] = value_number
-        elif "score" in label or label.startswith("points"):
-            value_number = _decimal(value)
-            if value_number is not None:
-                metrics["estimated_score"] = value_number
-        elif "cost" in label or label.startswith("objective"):
-            value_number = _number(value)
-            if value_number is not None:
-                metrics["objective_cost"] = value_number
-        elif "serialized" in label or "onnx file size" in label:
-            value_number = _number(value)
-            if value_number is not None:
-                metrics["serialized_model_bytes"] = value_number
+        _record_metric(metrics, label, value)
+
+    for raw_line in text.splitlines():
+        bullet = re.match(r"^\s*[-*]\s+([^:]+):\s*(.+)$", raw_line)
+        if bullet:
+            _record_metric(metrics, bullet.group(1), bullet.group(2))
 
     if "validation_examples" not in metrics:
-        match = re.search(r"passes all\s+(\d[\d,]*)\s+(?:provided\s+)?(?:examples|cases)", text, re.IGNORECASE)
+        match = re.search(
+            r"pass(?:es|ed) all\s+(\d[\d,]*)\s+"
+            r"(?:provided\s+)?(?:examples|cases)",
+            text,
+            re.IGNORECASE,
+        )
         if match:
             count = int(match.group(1).replace(",", ""))
             metrics["validation_examples"] = {"passed": count, "total": count}
@@ -178,6 +214,14 @@ def extract_readme_metrics(text: str) -> dict[str, Any]:
                 break
 
     node_match = re.search(r"(?:with|only)\s+(\d+|" + "|".join(NUMBER_WORDS) + r")\s+nodes?", text, re.IGNORECASE)
+    if node_match is None:
+        node_match = re.search(
+            r"graph:\s*(\d+|"
+            + "|".join(NUMBER_WORDS)
+            + r")\s+(?:`[^`]+`|\S+)\s+nodes?",
+            text,
+            re.IGNORECASE,
+        )
     if node_match:
         raw = node_match.group(1).lower()
         metrics["onnx_node_count"] = int(raw) if raw.isdigit() else NUMBER_WORDS[raw]
@@ -599,6 +643,14 @@ def apply_replay_event(state: DashboardState, event: dict[str, Any], now: float)
 def run_replay(args: argparse.Namespace, renderer: Renderer | None = None) -> int:
     fixture = load_fixture(Path(args.fixture))
     selected = set(expand_task_specs(args.tasks)) if args.tasks else None
+    available = {task["task"] for task in fixture["tasks"]}
+    unavailable = sorted((selected or set()) - available)
+    if unavailable:
+        rendered = ", ".join(unavailable)
+        raise FixtureError(
+            f"selected task(s) are not in the offline replay fixture: {rendered}. "
+            "Use --live to launch real workers."
+        )
     task_records = [task for task in fixture["tasks"] if selected is None or task["task"] in selected]
     if not task_records:
         raise FixtureError("none of the selected tasks are available in this replay fixture")
@@ -974,7 +1026,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="allow the explicitly started supervisor to consume an eligible reset credit",
     )
-    parser.add_argument("--fixture", default=str(DEFAULT_FIXTURE), help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--fixture",
+        default=str(DEFAULT_FIXTURE),
+        help="replay fixture JSON path (default: committed CodexForge fixture)",
+    )
     parser.add_argument("--max-runtime", type=float, default=0.0, help=argparse.SUPPRESS)
     return parser
 

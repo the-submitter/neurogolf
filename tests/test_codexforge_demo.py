@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 from demo.build_replay_fixture import build_fixture
 from demo.codexforge_dashboard import (
     DashboardState,
+    FixtureError,
     JsonlObserver,
     Renderer,
     WorkerState,
@@ -59,11 +60,18 @@ def test_committed_fixture_schema_and_regeneration() -> None:
 def test_extracts_factual_metrics_from_existing_readmes() -> None:
     task001 = extract_readme_metrics((ROOT / "tasks" / "task001" / "README.md").read_text())
     task002 = extract_readme_metrics((ROOT / "tasks" / "task002" / "README.md").read_text())
+    task006 = extract_readme_metrics((ROOT / "tasks" / "task006" / "README.md").read_text())
     task010 = extract_readme_metrics((ROOT / "tasks" / "task010" / "README.md").read_text())
-    assert task001["objective_cost"] == 305
-    assert task001["exhaustive_cases"] == {"passed": 4608, "total": 4608}
+    assert task001["objective_cost"] == 129
+    assert task001["validation_examples"] == {"passed": 268, "total": 268}
     assert task002["estimated_score"] == pytest.approx(15.141405)
     assert task002["objective_cost"] == 19122
+    assert task006["validation_examples"] == {"passed": 266, "total": 266}
+    assert task006["intermediate_memory_bytes"] == 0
+    assert task006["parameters"] == 100
+    assert task006["objective_cost"] == 100
+    assert task006["estimated_score"] == pytest.approx(20.394830)
+    assert task006["onnx_node_count"] == 1
     assert task010["onnx_node_count"] == 4
     assert task010["validation_examples"] == {"passed": 265, "total": 265}
 
@@ -193,6 +201,30 @@ def test_replay_makes_no_network_calls(tmp_path: Path, monkeypatch: pytest.Monke
     assert run_replay(args, Renderer(color=False, stream=io.StringIO())) == 0
 
 
+def test_replay_rejects_selected_tasks_missing_from_fixture(tmp_path: Path) -> None:
+    fixture = build_fixture(ROOT)
+    path = tmp_path / "fixture.json"
+    path.write_text(json.dumps(fixture))
+    args = argparse.Namespace(
+        fixture=str(path),
+        tasks=["1,6"],
+        no_color=True,
+        speed=100.0,
+        max_runtime=0.0,
+    )
+    with pytest.raises(FixtureError, match=r"task006.*--live"):
+        run_replay(args, Renderer(color=False, stream=io.StringIO()))
+
+
+def test_custom_fixture_can_snapshot_previous_live_tasks() -> None:
+    fixture = build_fixture(ROOT, ("task001", "task006"))
+    assert [task["task"] for task in fixture["tasks"]] == ["task001", "task006"]
+    task006 = fixture["tasks"][1]
+    assert task006["metrics"]["objective_cost"] == 100
+    assert fixture["parallel_limit"] == 2
+    assert fixture["duration_seconds"] == 68
+
+
 def test_default_launcher_selects_replay_without_codex(tmp_path: Path) -> None:
     (tmp_path / "scripts").mkdir()
     (tmp_path / "demo" / "fixtures").mkdir(parents=True)
@@ -243,5 +275,6 @@ def test_live_command_safely_forwards_tasks_and_parallelism() -> None:
     assert command[-5:] == ["11", "12", "20", "--parallel", "2"]
     assert command[1] == str(ROOT / "run_codex_tasks.py")
     assert expand_task_specs(["11-12", "task020"]) == ["task011", "task012", "task020"]
+    assert expand_task_specs(["1,6"]) == ["task001", "task006"]
     with pytest.raises(ValueError):
         expand_task_specs(["11; touch /tmp/not-safe"])

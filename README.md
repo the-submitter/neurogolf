@@ -63,11 +63,20 @@ the final validation counts, costs, scores, graph details, and artifact states
 come from repository evidence rather than invented demo data.
 
 The scripts support Ubuntu/Linux, WSL, and macOS with Python 3 and Git. To
-launch two real workers after installing and signing in to Codex, run:
+launch two real workers after installing the full environment and signing in
+to Codex, run:
 
 ```bash
+./scripts/setup_demo.sh --full
 ./scripts/launch_demo.sh --live --tasks 11-12 --parallel 2
 ```
+
+The launcher defaults to the offline replay even when `--tasks` is supplied.
+Always pass `--live` to start real workers; for example, task001 and task006
+require `./scripts/launch_demo.sh --live --tasks 1,6 --parallel 2`. Add
+`--force` when their existing submissions should be optimized again. A replay
+selection not present in the committed fixture is rejected instead of being
+silently omitted.
 
 To observe runner and supervisor processes that were started independently in
 other terminals, use:
@@ -117,7 +126,8 @@ the heavyweight scoring and ONNX packages:
 ./scripts/setup_demo.sh
 ```
 
-Install the full dependency set only when rebuilding or validating ONNX models:
+Install the full dependency set before live worker runs and whenever rebuilding
+or validating ONNX models:
 
 ```bash
 ./scripts/setup_demo.sh --full
@@ -155,11 +165,54 @@ cp .codex/neurogolf-high.config.toml ~/.codex/neurogolf-high.config.toml
 
 The dashboard supports `q`, `p`, `r`, `+`, `-`, `l`, and `a` for quitting,
 pausing/restarting or changing replay speed, and toggling activity/artifacts.
-Use `--no-color` for terminals or recordings that do not support colour. The
-fixture can be regenerated from current task evidence with:
+Use `--no-color` for terminals or recordings that do not support colour.
+
+### Turn completed live tasks into a replay
+
+Live runs do not automatically rewrite replay fixtures. They update task
+READMEs, ONNX files, results, and logs, but an explicit snapshot is required
+after the selected workers finish successfully. This prevents an in-progress
+or failed run from silently changing the committed demo.
+
+If you only need to inspect the latest saved logs and final states,
+`./scripts/launch_demo.sh --attach --tasks 1,6` can do that without building a
+fixture. Use the fixture procedure below when you want the deterministic timed
+**DEMO REPLAY** presentation.
+
+For example, snapshot the completed task001 and task006 evidence into a
+separate fixture and replay it without Codex or quota usage:
 
 ```bash
-python demo/build_replay_fixture.py
+./.venv/bin/python demo/build_replay_fixture.py \
+  --tasks 1,6 \
+  --output demo/fixtures/task001-task006.json
+
+./scripts/launch_demo.sh --replay \
+  --fixture demo/fixtures/task001-task006.json
+```
+
+The builder automates extraction of task IDs, principles, documented metrics,
+and existing README/ONNX/result/log artifact paths. It then creates a
+deterministic authored timeline; it does not replay the original live process
+timing or make network calls. Keep the custom fixture if it should be shared or
+recorded, or delete it after a one-off local demo.
+
+Validate that a saved custom fixture still matches current evidence with:
+
+```bash
+./.venv/bin/python demo/build_replay_fixture.py \
+  --tasks 1,6 \
+  --output demo/fixtures/task001-task006.json \
+  --check
+```
+
+Running the builder without `--tasks` or `--output` regenerates the standard
+committed task001/task002/task010 fixture used by `make demo` and by the default
+launcher. `setup_demo.sh` checks that standard fixture for staleness but does
+not rewrite it automatically:
+
+```bash
+./.venv/bin/python demo/build_replay_fixture.py
 ```
 
 ## Parallel task runner
@@ -209,6 +262,24 @@ Repository preflight also requires `utils/neurogolf_utils.py`,
 `utils/task_map.json`, `utils/task_principles.json`, and
 `utils/the-2026-neurogolf-championship.py`. Task-to-generator lookup is loaded
 from `utils/task_map.json`.
+
+The two mappings are generated maintenance artifacts. Regenerate or validate
+them from the repository root with:
+
+```bash
+./.venv/bin/python scripts/map_tasks.py --check
+./.venv/bin/python scripts/generate_task_principles.py --check
+
+# Omit --check to rewrite the corresponding JSON files in utils/.
+```
+
+`map_tasks.py` matches complete public NeuroGolf train/test pairs against
+ARC-AGI without relying on example order, restricts candidates to tasks with
+an ARC-GEN generator, and deliberately excludes generated `arc-gen` cases.
+`generate_task_principles.py` joins that map with the principle comments in
+`ARC-GEN/task_list.py`. Both scripts use only the Python standard library and
+default to this repository's current `kaggle_tasks_data/`, `ARC-GEN/`, and
+`utils/` layout.
 
 Outputs follow the requested layout:
 

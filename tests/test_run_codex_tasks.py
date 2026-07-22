@@ -58,3 +58,9 @@ def test_catalog_export_falls_back_when_selected_model_is_absent(tmp_path: Path)
     assert catalog is None
     assert warning is not None
     assert "not bundled" in warning
+
+
+def test_worker_prompt_uses_repository_local_environment() -> None:
+    prompt = (Path(__file__).resolve().parents[1] / "codex_task_prompt.md").read_text()
+    assert "`./.venv`" in prompt
+    assert "`~/.venv`" not in prompt
