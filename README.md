@@ -1,4 +1,33 @@
-# NeuroGolf Codex task runner
+# CodexForge: Built by Codex for Codex
+
+A Codex-built orchestration system that launches parallel Codex agents to solve, validate, and optimize 400 ARC-AGI visual-reasoning tasks from Kaggle NeuroGolf as executable ONNX programs.
+
+## How this was built with Codex
+
+This repository was developed as a human-directed collaboration with Codex.
+The human author chose the product goal and competition strategy: isolate one
+task per worker, optimize against the official memory-plus-parameter metric,
+use 10 concurrent workers by default, preserve task-local evidence, and keep
+quota resetting optional and independent from the runner. The author also
+decided when completed tasks should be skipped or force-rerun and retained
+control over credentials, reset-credit use, and final submissions.
+
+Codex turned those decisions into the orchestration and demonstration system:
+it implemented subprocess concurrency, task locks, bounded retries, signal
+cleanup, per-task logs and summaries, stable-CLI selection, the persistent
+quota monitor, the replay/live dashboard, tests, setup automation, and
+documentation. Codex accelerated the repetitive engineering work—inspecting
+the repository, tracing failures across scripts and CLI versions, applying
+coordinated changes, and validating them—while the human author reviewed the
+behavior and made the scope, safety, and product trade-offs.
+
+GPT-5.6 Sol is also the worker model selected by the runner. With high
+reasoning effort, each worker is prompted to inspect one task's examples and
+ARC-GEN generator, infer the transformation, build and test candidate ONNX
+graphs, compare their official cost and score, and document the best result.
+This makes the model's contribution auditable through task-local READMEs,
+event logs, result messages, and submission artifacts rather than presenting
+the final models as unexplained outputs.
 
 This repository includes two independent Python 3 scripts:
 
@@ -8,13 +37,66 @@ This repository includes two independent Python 3 scripts:
   persistent `codex app-server` process and can redeem one reset credit when
   the Codex quota reaches zero.
 
-Both scripts use only the Python standard library. They were checked against
-`codex-cli 0.144.2`.
+Both scripts use only the Python standard library. They prefer the stable Codex
+standalone installation at `~/.codex/packages/standalone/current/bin/codex`
+when `codex` on `PATH` resolves to a VS Code preview build. This avoids sharing
+preview-only model-cache schemas with batch workers; `--codex-bin` can still
+select a different executable explicitly.
+
+## 90-second demo
+
+```bash
+./scripts/setup_demo.sh
+./scripts/launch_demo.sh
+```
+
+The default **DEMO REPLAY** is an offline, quota-free 78-second timeline built
+from the committed READMEs and artifacts for tasks 001, 002, and 010. It does
+not require Codex, a Codex login, Kaggle, AWS credentials, the ONNX stack, or a
+network connection. Replay events are always visibly identified as replay;
+the final validation counts, costs, scores, graph details, and artifact states
+come from repository evidence rather than invented demo data.
+
+The scripts support Ubuntu/Linux, WSL, and macOS with Python 3 and Git. To
+launch two real workers after installing and signing in to Codex, run:
+
+```bash
+./scripts/launch_demo.sh --live --tasks 11-12 --parallel 2
+```
+
+To observe runner and supervisor processes that were started independently in
+other terminals, use:
+
+```bash
+./scripts/launch_demo.sh --attach
+```
+
+Live mode never starts the quota supervisor unless `--with-supervisor` is
+given. That explicit supervisor still runs with `--dry-run`; reset-credit
+redemption requires the additional `--allow-reset-credit` flag. Replay and
+attach modes never redeem reset credits.
+
+For a live launch, the dashboard baselines existing logs and the prior run
+summary, so a forced rerun begins queued/running instead of inheriting an old
+completed state. Attach mode intentionally displays the latest historical
+state before new events arrive.
+
+```text
+Task selection
+      ↓
+Parallel Codex workers
+      ↓
+Task-local builders and ONNX graphs
+      ↓
+Validation and official scoring
+      ↓
+Submission artifacts and run summary
+```
 
 ## Installation
 
-Install Git, Python 3, and the Codex CLI, then sign in to Codex before setting
-up this repository.
+Install Git and Python 3 before setting up this repository. The Codex CLI and a
+Codex login are needed only for live mode, not for the default replay.
 
 Clone the repository together with ARC-GEN and all of its nested submodules:
 
@@ -23,27 +105,57 @@ git clone --recurse-submodules https://github.com/the-submitter/neurogolf.git
 cd neurogolf
 ```
 
-Create the shared Python environment and install the scoring, ONNX, notebook,
-and visualization dependencies:
+Prepare the repository-local replay environment. This is idempotent and skips
+the heavyweight scoring and ONNX packages:
 
 ```bash
-python3 -m venv ~/.venv
-~/.venv/bin/python -m pip install --upgrade pip
-~/.venv/bin/python -m pip install -r requirements.txt
-~/.venv/bin/python -c "import IPython, matplotlib, numpy, onnx, onnx_tool, onnxruntime"
+./scripts/setup_demo.sh
 ```
 
-Install the checked-in Codex profile reference as an active named profile:
+Install the full dependency set only when rebuilding or validating ONNX models:
+
+```bash
+./scripts/setup_demo.sh --full
+```
+
+### Makefile shortcuts
+
+The [Makefile](Makefile) is optional. It contains two convenience targets and
+does not compile or install anything:
+
+```text
+make demo       # ./scripts/launch_demo.sh
+make demo-live  # ./scripts/launch_demo.sh --live --tasks 11-12 --parallel 2
+```
+
+Use `make demo` for the safe, offline replay. Use `make demo-live` only when
+you deliberately want two real Codex workers and have installed and signed in
+to the Codex CLI. If `make` is unavailable, run the equivalent shell commands
+shown above; all setup, runner, supervisor, and dashboard scripts work without
+the Makefile.
+
+Replay uses only Python's standard library. The versions in `requirements.txt`
+are pinned to the official sample notebook where specified and to the verified
+environment for its display dependencies. The runner and quota supervisor also
+remain standard-library-only scripts.
+
+Live mode requires Codex. Install the checked-in profile reference manually as
+an active named profile; the setup script deliberately does not alter user
+configuration:
 
 ```bash
 mkdir -p ~/.codex
 cp .codex/neurogolf-high.config.toml ~/.codex/neurogolf-high.config.toml
 ```
 
-The Codex task prompt directs agents to use the shared `~/.venv` environment.
-The versions are pinned to the official sample notebook where specified and to
-the currently verified `~/.venv` versions for its display dependencies. The
-runner and quota supervisor themselves remain standard-library-only scripts.
+The dashboard supports `q`, `p`, `r`, `+`, `-`, `l`, and `a` for quitting,
+pausing/restarting or changing replay speed, and toggling activity/artifacts.
+Use `--no-color` for terminals or recordings that do not support colour. The
+fixture can be regenerated from current task evidence with:
+
+```bash
+python demo/build_replay_fixture.py
+```
 
 ## Parallel task runner
 
@@ -162,6 +274,21 @@ unavailable.
 `codex app-server` and the reset-credit method are experimental and may change
 in future CLI releases. The supervisor launches its own persistent stdio app
 server, so a separately managed app-server daemon is not required.
+
+## License and third-party material
+
+Original code and documentation in this repository are licensed under the
+[Apache License 2.0](LICENSE). This choice is compatible with the license used
+by the pinned Google ARC-GEN submodule, its nested ARC-AGI submodule, and the
+copyright notice in Google's NeuroGolf utility.
+
+That repository license does **not** relicense third-party material. ARC-GEN
+and ARC-AGI retain their own Apache-2.0 licenses and copyright notices. The
+NeuroGolf competition utility, starter notebook, task mappings, and task data
+retain their respective owners' rights and remain subject to their source
+notices and the applicable Kaggle competition rules and terms. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for sources, pinned revisions,
+license locations, and the exact scope of this repository's license.
 
 ---
 

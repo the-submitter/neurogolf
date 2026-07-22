@@ -48,6 +48,23 @@ RATE_LIMIT_PATTERNS = (
 RATE_LIMIT_PATTERNS = tuple(RATE_LIMIT_PATTERNS)
 
 
+def _default_codex_bin() -> str:
+    """Avoid VS Code preview CLIs when a stable standalone install exists."""
+
+    path_codex = shutil.which("codex")
+    stable_codex = Path.home() / ".codex/packages/standalone/current/bin/codex"
+    if (
+        stable_codex.is_file()
+        and os.access(stable_codex, os.X_OK)
+        and (
+            path_codex is None
+            or "/.vscode/extensions/" in Path(path_codex).resolve().as_posix()
+        )
+    ):
+        return str(stable_codex)
+    return "codex"
+
+
 @dataclasses.dataclass(frozen=True)
 class TaskResult:
     task: str
@@ -400,7 +417,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--profile", default=DEFAULT_PROFILE)
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--reasoning", default=DEFAULT_REASONING)
-    parser.add_argument("--codex-bin", default="codex")
+    parser.add_argument(
+        "--codex-bin",
+        default=_default_codex_bin(),
+        help="Codex executable (prefers the stable standalone install over a VS Code preview build)",
+    )
     parser.add_argument(
         "--force",
         action="store_true",

@@ -1,3 +1,5 @@
+# Optional full environment installed by `./scripts/setup_demo.sh --full`.
+# The default CodexForge replay uses only the Python standard library.
 # Versions specified by the NeuroGolf sample notebook.
 numpy==2.4.4
 onnx==1.21.0

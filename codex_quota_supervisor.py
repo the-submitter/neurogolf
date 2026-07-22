@@ -29,6 +29,23 @@ READ_RATE_LIMITS_METHOD = "account/rateLimits/read"
 CONSUME_RESET_METHOD = "account/rateLimitResetCredit/consume"
 
 
+def _default_codex_bin() -> str:
+    """Avoid VS Code preview CLIs when a stable standalone install exists."""
+
+    path_codex = shutil.which("codex")
+    stable_codex = Path.home() / ".codex/packages/standalone/current/bin/codex"
+    if (
+        stable_codex.is_file()
+        and os.access(stable_codex, os.X_OK)
+        and (
+            path_codex is None
+            or "/.vscode/extensions/" in Path(path_codex).resolve().as_posix()
+        )
+    ):
+        return str(stable_codex)
+    return "codex"
+
+
 class AppServerError(RuntimeError):
     """Raised when the app-server process or protocol request fails."""
 
@@ -411,7 +428,11 @@ def _build_parser() -> argparse.ArgumentParser:
         default=0,
         help="maximum successful resets recorded in the state file; 0 uses all available credits",
     )
-    parser.add_argument("--codex-bin", default="codex")
+    parser.add_argument(
+        "--codex-bin",
+        default=_default_codex_bin(),
+        help="Codex executable (prefers the stable standalone install over a VS Code preview build)",
+    )
     parser.add_argument("--state-file", default="logs/quota-supervisor-state.json")
     parser.add_argument(
         "--dry-run",

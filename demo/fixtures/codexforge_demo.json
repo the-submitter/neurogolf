@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "title": "CodexForge: Built by Codex for Codex",
+  "description": "Authored replay timeline whose final facts are extracted from committed repository evidence.",
+  "duration_seconds": 78,
+  "model": "gpt-5.6-sol",
+  "reasoning": "high",
+  "parallel_limit": 3,
+  "tasks": [
+    {
+      "task": "task001",
+      "task_id": "007bbfb7",
+      "principle": "fractal",
+      "metrics": {
+        "intermediate_memory_bytes": 285,
+        "parameters": 20,
+        "objective_cost": 305,
+        "estimated_score": 19.27968822339259,
+        "serialized_model_bytes": 728,
+        "validation_examples": {
+          "passed": 268,
+          "total": 268
+        },
+        "exhaustive_cases": {
+          "passed": 4608,
+          "total": 4608
+        },
+        "onnx_node_count": 7
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task001/README.md"
+        },
+        {
+          "path": "submission/task001.onnx"
+        },
+        {
+          "path": "results/task001.md"
+        },
+        {
+          "path": "logs/task001.events.jsonl"
+        },
+        {
+          "path": "tasks/task001/task001.onnx"
+        }
+      ],
+      "evidence": "tasks/task001/README.md"
+    },
+    {
+      "task": "task002",
+      "task_id": "00d62c1b",
+      "principle": "honeypots",
+      "metrics": {
+        "validation_examples": {
+          "passed": 268,
+          "total": 268
+        },
+        "intermediate_memory_bytes": 15464,
+        "parameters": 3658,
+        "objective_cost": 19122,
+        "estimated_score": 15.141405,
+        "serialized_model_bytes": 4810
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task002/README.md"
+        },
+        {
+          "path": "submission/task002.onnx"
+        },
+        {
+          "path": "results/task002.md"
+        },
+        {
+          "path": "logs/task002.events.jsonl"
+        },
+        {
+          "path": "tasks/task002/task002.onnx"
+        }
+      ],
+      "evidence": "tasks/task002/README.md"
+    },
+    {
+      "task": "task010",
+      "task_id": "08ed6ac7",
+      "principle": "barchart",
+      "metrics": {
+        "intermediate_memory_bytes": 128,
+        "parameters": 207,
+        "objective_cost": 335,
+        "estimated_score": 19.185869,
+        "serialized_model_bytes": 1671,
+        "validation_examples": {
+          "passed": 265,
+          "total": 265
+        },
+        "exhaustive_cases": {
+          "passed": 3024,
+          "total": 3024
+        },
+        "onnx_node_count": 4
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task010/README.md"
+        },
+        {
+          "path": "submission/task010.onnx"
+        },
+        {
+          "path": "results/task010.md"
+        },
+        {
+          "path": "logs/task010.events.jsonl"
+        },
+        {
+          "path": "tasks/task010/task010.onnx"
+        }
+      ],
+      "evidence": "tasks/task010/README.md"
+    }
+  ],
+  "events": [
+    {
+      "at": 0,
+      "task": null,
+      "phase": "queued",
+      "status": "queued",
+      "action": "Replay preflight passed; selected three repository-backed task stories"
+    },
+    {
+      "at": 3,
+      "task": "task001",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 5,
+      "task": "task002",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 7,
+      "task": "task010",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 11,
+      "task": "task001",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_007bbfb7.py (fractal)"
+    },
+    {
+      "at": 13,
+      "task": "task002",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_00d62c1b.py (honeypots)"
+    },
+    {
+      "at": 15,
+      "task": "task010",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_08ed6ac7.py (barchart)"
+    },
+    {
+      "at": 19,
+      "task": "task001",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring the Kronecker-square fractal rule"
+    },
+    {
+      "at": 22,
+      "task": "task002",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring green pot-border detection and yellow interior fill"
+    },
+    {
+      "at": 24,
+      "task": "task010",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring bar-height ranking from four distinct columns"
+    },
+    {
+      "at": 28,
+      "task": "task001",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building a compact ConvTranspose + Einsum graph"
+    },
+    {
+      "at": 31,
+      "task": "task002",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building quantized template detectors with QLinearConv"
+    },
+    {
+      "at": 34,
+      "task": "task010",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building a four-node Einsum + TopK + Gather graph"
+    },
+    {
+      "at": 38,
+      "task": "task001",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against 268 packaged examples"
+    },
+    {
+      "at": 42,
+      "task": "task002",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against 268 packaged examples"
+    },
+    {
+      "at": 45,
+      "task": "task010",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against 265 packaged examples"
+    },
+    {
+      "at": 50,
+      "task": "task001",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 54,
+      "task": "task002",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 57,
+      "task": "task010",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 61,
+      "task": "task001",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 68,
+      "task": "task002",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 73,
+      "task": "task010",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 76,
+      "task": null,
+      "phase": "completed",
+      "status": "completed",
+      "action": "Replay complete: parallel reasoning became validated executable ONNX artifacts"
+    }
+  ]
+}

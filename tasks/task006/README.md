@@ -47,6 +47,20 @@ channels.  With ten output channels, five visible input channels per group,
 and two spatial taps, its dense parameter count is necessarily
 `10 * 5 * 1 * 2 = 100`.
 
+The main alternatives were checked against the scorer's combined
+memory-plus-parameter objective:
+
+| design | limiting cost/issue |
+|---|---|
+| One-node grouped `Conv` (selected) | 0 intermediate bytes + 100 parameters |
+| `Einsum` over aligned panel tensors | alignment requires `Slice`/reshape intermediates; two minimal 3×3 float tensors alone cost 72 bytes before the equation weights and output assembly |
+| Boolean `Slice`/`And`/`Not`/padding | exact, but costs 336 intermediate bytes + 33 parameters = 369 |
+| `group=5`/`group=10` convolution | cheaper but cannot connect blue input channel 1 to red output channel 2 |
+| Sparse convolution weights | only 5 stored values, but rejected by the scorer's full ONNX shape check |
+
+This is a lower bound for the exact single-`Conv` family, not a claim of a
+global lower bound over every ONNX operator and opset.
+
 An archived Boolean `Slice`/`Cast`/`And`/`Not` design claimed cost 18 based on
 counting only two Boolean tensors.  Rechecking that design with the attached
 May 14 scorer counts all statically shaped intermediates and `Constant`
@@ -81,6 +95,7 @@ Final local results:
 - Estimated official task score: `25 - ln(100) = 20.394830`
 - ONNX file size: 648 bytes
 - Graph: one `Conv` node, IR version 10, opset 10
+- Reverified: 2026-07-22 with ONNX 1.21.0 and ONNX Runtime 1.24.4
 
 This improves the previous bias-based convolution from cost 110 and score
 20.299520 while preserving the same exact transformation.

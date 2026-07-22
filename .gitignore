@@ -32,6 +32,12 @@ backup/
 debug/
 # assets/
 queries.md
+prompt.md
 /.env
 # /logs/
 # /results/
+
+# Runtime account state (the dashboard only observes these files when present)
+/logs/quota-supervisor-state.json
+/logs/quota-supervisor-state.json.lock
+/logs/quota-supervisor-app-server.stderr
