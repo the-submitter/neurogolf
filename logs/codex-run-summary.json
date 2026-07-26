@@ -1,28 +1,44 @@
 {
   "counts": {
-    "completed": 2
+    "skipped": 4
   },
-  "finished_at": "2026-07-23T01:18:25.230840+05:30",
+  "finished_at": "2026-07-25T20:54:12.782105+05:30",
   "model": "gpt-5.6-sol",
   "parallelism": 2,
   "profile": "neurogolf-high",
   "reasoning": "high",
   "tasks": [
     {
-      "attempts": 1,
-      "elapsed_seconds": 2062.5047316750006,
-      "message": "",
+      "attempts": 0,
+      "elapsed_seconds": 0.0,
+      "message": "submission exists",
       "returncode": 0,
-      "status": "completed",
-      "task": "task001"
+      "status": "skipped",
+      "task": "task012"
     },
     {
-      "attempts": 1,
-      "elapsed_seconds": 692.1680767839989,
-      "message": "",
+      "attempts": 0,
+      "elapsed_seconds": 0.0,
+      "message": "submission exists",
       "returncode": 0,
-      "status": "completed",
-      "task": "task006"
+      "status": "skipped",
+      "task": "task013"
+    },
+    {
+      "attempts": 0,
+      "elapsed_seconds": 0.0,
+      "message": "submission exists",
+      "returncode": 0,
+      "status": "skipped",
+      "task": "task014"
+    },
+    {
+      "attempts": 0,
+      "elapsed_seconds": 0.0,
+      "message": "submission exists",
+      "returncode": 0,
+      "status": "skipped",
+      "task": "task015"
     }
   ]
 }

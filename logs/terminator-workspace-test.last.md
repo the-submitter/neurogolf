@@ -1,5 +1,0 @@
-- `pwd`: `/media/rohit-raje/Elements/Rohit/rohit_lenovo/explore/neurogolf`
-- Project root listed successfully.
-- Temporary file created: verified it existed.
-- Temporary file deleted: verified it is gone.
-- No other modifications made.

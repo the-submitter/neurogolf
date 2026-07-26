@@ -1,0 +1,107 @@
+1
+00:00:00,150 --> 00:00:03,000
+CodexForge tackles 400 Kaggle NeuroGolf ARC tasks.
+
+2
+00:00:03,200 --> 00:00:08,900
+In Kaggle NeuroGolf, each solution is a correct, compact ONNX
+computational graph.
+
+3
+00:00:09,250 --> 00:00:15,600
+The principle is simple: use Codex for reasoning; use deterministic
+software for orchestration.
+
+4
+00:00:16,150 --> 00:00:23,100
+Repository state enters a deterministic Python control plane that
+owns scheduling, locks, retries, timeouts, and logs.
+
+5
+00:00:23,300 --> 00:00:30,650
+It fans tasks out to Codex workers, then verifies builders,
+explanations, scores, and ONNX submissions.
+
+6
+00:00:31,200 --> 00:00:38,300
+The repository packages the runner, quota supervisor, dashboard,
+prompts, tests, and workspaces.
+
+7
+00:00:38,550 --> 00:00:45,700
+Here, a live campaign selects tasks 12 through 15, with at most two
+workers active.
+
+8
+00:00:45,950 --> 00:00:53,300
+Each worker receives exactly one Kaggle NeuroGolf ARC task and an
+isolated workspace.
+
+9
+00:00:53,550 --> 00:01:01,400
+Workers inspect examples and ARC-GEN generators, infer the rule, and
+synthesize ONNX graphs.
+
+10
+00:01:01,650 --> 00:01:10,050
+The dashboard turns structured Codex events into readable phases
+while retaining raw JSONL logs.
+
+11
+00:01:10,350 --> 00:01:19,100
+Workers can run for hours, so a parent reasoning agent should not
+stay active merely to poll them.
+
+12
+00:01:19,400 --> 00:01:28,300
+Deterministic Python handles concurrency, locks, process
+supervision, retries, timeouts, cancellation, and resumability.
+
+13
+00:01:28,600 --> 00:01:37,950
+As task 12 completes, its builder, explanation, ONNX submission,
+result, and event history become visible.
+
+14
+00:01:38,250 --> 00:01:46,950
+The official scorer rewards correct ONNX programs with lower
+combined memory and parameter cost.
+
+15
+00:01:47,250 --> 00:01:57,350
+Every worker tests packaged examples, probes fresh generator cases,
+debugs failures, and iterates toward a smaller graph.
+
+16
+00:01:57,650 --> 00:02:08,150
+Task-local READMEs record validation counts, exhaustive tests, cost,
+score, hashes, and the final submission path.
+
+17
+00:02:08,450 --> 00:02:17,400
+Open worker slots are filled automatically, so queued tasks start
+without human coordination.
+
+18
+00:02:17,700 --> 00:02:27,900
+Completed tasks leave durable evidence while other Codex workers
+continue reasoning and optimizing in parallel.
+
+19
+00:02:28,200 --> 00:02:38,750
+By now, tasks 12 through 14 are verified, while task 15 continues
+testing and optimization.
+
+20
+00:02:39,000 --> 00:02:45,400
+Quota monitoring runs independently from the worker control plane.
+
+21
+00:02:45,950 --> 00:02:52,400
+The legacy view shows why this matters: parallel work otherwise
+becomes terminals, logs, and manual status checks.
+
+22
+00:02:52,650 --> 00:02:59,450
+CodexForge makes long-running Codex campaigns observable,
+verifiable, and resumable—without a parent agent polling.

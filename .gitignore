@@ -37,6 +37,20 @@ prompt.md
 # /logs/
 # /results/
 
+# Video production outputs and generated intermediates.
+# Curated assets/video_processing/frames and graphics remain versioned because
+# README.md embeds them.
+/assets/video_processing/**/*.mp4
+/assets/video_processing/**/*.mov
+/assets/video_processing/**/*.mkv
+/assets/video_processing/**/*.webm
+/assets/video_processing/**/*.wav
+/assets/video_processing/**/*.flac
+/assets/video_processing/**/*.m4a
+/assets/video_processing/work/**/*.mp3
+/assets/video_processing/work/**/*.jpg
+/assets/video_processing/work/**/*.png
+
 # Runtime account state (the dashboard only observes these files when present)
 /logs/quota-supervisor-state.json
 /logs/quota-supervisor-state.json.lock

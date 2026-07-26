@@ -7,6 +7,7 @@ import argparse
 import contextlib
 import dataclasses
 import datetime as dt
+import heapq
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIXTURE = REPO_ROOT / "demo" / "fixtures" / "codexforge_demo.json"
 DEFAULT_LIVE_MODEL = "gpt-5.6-sol"
 DEFAULT_LIVE_REASONING = "high"
+DEFAULT_LIVE_PARALLEL = 2
 VALID_PHASES = {
     "queued",
     "inspecting examples",
@@ -440,6 +442,34 @@ def artifact_paths(artifacts: dict[str, Any], task: str) -> list[str]:
     return paths
 
 
+def initial_worker_state(
+    root: Path,
+    task: str,
+    principle: str,
+    *,
+    skip_existing_submission: bool = False,
+) -> WorkerState:
+    """Build dashboard state consistent with the runner's submission skip rule."""
+
+    detected = detect_artifacts(root, task)
+    skipped = skip_existing_submission and bool(detected["submission"])
+    return WorkerState(
+        task=task,
+        principle=principle,
+        phase="skipped" if skipped else "queued",
+        attempt=0 if skipped else 1,
+        action=(
+            "Existing submission detected; skipped in this run"
+            if skipped
+            else "Waiting for a worker slot"
+        ),
+        status="skipped" if skipped else "queued",
+        metrics=read_task_metrics(root, task),
+        artifact=artifact_label(detected),
+        artifact_paths=artifact_paths(detected, task),
+    )
+
+
 def read_task_metrics(root: Path, task: str) -> dict[str, Any]:
     path = root / "tasks" / task / "README.md"
     try:
@@ -640,6 +670,63 @@ def apply_replay_event(state: DashboardState, event: dict[str, Any], now: float)
     state.activities.append(f"{task or 'system':<8} {action}")
 
 
+def throttle_replay_timeline(
+    events: list[dict[str, Any]],
+    task_records: list[dict[str, Any]],
+    parallel: int,
+    duration: float,
+) -> tuple[list[dict[str, Any]], float]:
+    """Delay task timelines as needed so a replay honors a lower worker limit."""
+
+    bounds: dict[str, tuple[float, float]] = {}
+    for record in task_records:
+        task = str(record["task"])
+        task_events = [event for event in events if event.get("task") == task]
+        starts = [
+            float(event["at"])
+            for event in task_events
+            if event.get("status") == "running"
+        ]
+        if starts and task_events:
+            bounds[task] = (
+                min(starts),
+                max(float(event["at"]) for event in task_events),
+            )
+    if not bounds:
+        return events, duration
+
+    available: list[float] = []
+    shifts: dict[str, float] = {}
+    original_latest = max(end for _, end in bounds.values())
+    new_latest = original_latest
+    ordered_tasks = sorted(bounds, key=lambda task: bounds[task][0])
+    for task in ordered_tasks:
+        original_start, original_end = bounds[task]
+        if len(available) < parallel:
+            new_start = original_start
+        else:
+            next_available = heapq.heappop(available)
+            new_start = max(original_start, next_available + 0.001)
+        shift = new_start - original_start
+        new_end = original_end + shift
+        shifts[task] = shift
+        heapq.heappush(available, new_end)
+        new_latest = max(new_latest, new_end)
+
+    extension = max(0.0, new_latest - original_latest)
+    adjusted: list[dict[str, Any]] = []
+    for event in events:
+        copy = dict(event)
+        task = copy.get("task")
+        if task in shifts:
+            copy["at"] = float(copy["at"]) + shifts[str(task)]
+        elif extension and float(copy["at"]) > original_latest:
+            copy["at"] = float(copy["at"]) + extension
+        adjusted.append(copy)
+    adjusted.sort(key=lambda event: float(event["at"]))
+    return adjusted, duration + extension
+
+
 def run_replay(args: argparse.Namespace, renderer: Renderer | None = None) -> int:
     fixture = load_fixture(Path(args.fixture))
     selected = set(expand_task_specs(args.tasks)) if args.tasks else None
@@ -665,16 +752,26 @@ def run_replay(args: argparse.Namespace, renderer: Renderer | None = None) -> in
         )
         for task in task_records
     }
+    requested_parallel = getattr(args, "parallel", None)
+    fixture_parallel = min(fixture["parallel_limit"], max(1, len(workers)))
+    parallel = min(requested_parallel or fixture_parallel, fixture_parallel)
+    duration = float(fixture["duration_seconds"])
+    if parallel < fixture_parallel:
+        events, duration = throttle_replay_timeline(
+            events,
+            task_records,
+            parallel,
+            duration,
+        )
     state = DashboardState(
         mode="replay",
         workers=workers,
-        parallel=min(fixture["parallel_limit"], max(1, len(workers))),
+        parallel=parallel,
         model=fixture["model"],
         reasoning=fixture["reasoning"],
     )
     renderer = renderer or Renderer(color=not args.no_color)
     speed = args.speed
-    duration = float(fixture["duration_seconds"])
     stop = False
     index = 0
     replay_elapsed = 0.0
@@ -807,12 +904,41 @@ def parse_quota_line(line: str, state: DashboardState) -> None:
         state.reset_credits = credits.group(1)
 
 
-def parse_runner_line(line: str, state: DashboardState) -> None:
-    """Update live metadata emitted by run_codex_tasks.py at startup."""
+def parse_runner_line(line: str, state: DashboardState, now: float | None = None) -> None:
+    """Update live metadata and worker starts emitted by the task runner."""
     match = re.search(r"\bmodel=([^,\s]+),\s*reasoning=([^,\s]+)", line)
     if match:
         state.model = match.group(1)
         state.reasoning = match.group(2)
+    started = re.search(r"\b(task\d{3}): starting attempt (\d+)/(\d+)", line)
+    if started and (worker := state.workers.get(started.group(1))) is not None:
+        if worker.started_at is None:
+            worker.started_at = time.monotonic() if now is None else now
+        worker.attempt = int(started.group(2))
+        worker.status = "running"
+        worker.phase = "inspecting examples"
+        worker.action = f"Starting Codex worker attempt {worker.attempt}"
+
+
+def apply_live_event(worker: WorkerState, event: dict[str, str], now: float) -> None:
+    """Apply an observed worker event while maintaining its elapsed clock."""
+
+    status = event["status"]
+    if worker.started_at is None and status == "running":
+        worker.started_at = now
+    if status in {"completed", "failed", "skipped"} and worker.started_at is not None:
+        worker.elapsed = max(worker.elapsed, now - worker.started_at)
+    worker.phase = event["phase"]
+    worker.status = status
+    worker.action = event["action"]
+
+
+def refresh_worker_elapsed(state: DashboardState, now: float) -> None:
+    """Advance clocks for all currently running workers."""
+
+    for worker in state.workers.values():
+        if worker.status == "running" and worker.started_at is not None:
+            worker.elapsed = max(0.0, now - worker.started_at)
 
 
 def _reader_thread(stream: TextIO, output: queue.Queue[str]) -> None:
@@ -825,13 +951,14 @@ def _reader_thread(stream: TextIO, output: queue.Queue[str]) -> None:
 
 def build_live_commands(args: argparse.Namespace, root: Path = REPO_ROOT, python: str = sys.executable) -> list[list[str]]:
     tasks = expand_task_specs(args.tasks or ["11-12"])
+    parallel = args.parallel or DEFAULT_LIVE_PARALLEL
     runner = [
         python,
         str(root / "run_codex_tasks.py"),
         "--tasks",
         *[str(int(task.removeprefix("task"))) for task in tasks],
         "--parallel",
-        str(args.parallel),
+        str(parallel),
     ]
     if args.force:
         runner.append("--force")
@@ -872,20 +999,19 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
         principles = {name: str(value.get("principle", "N/A")) for name, value in raw.items() if isinstance(value, dict)}
     except (OSError, json.JSONDecodeError):
         pass
-    workers = {
-        task: WorkerState(
-            task=task,
-            principle=principles.get(task, "N/A"),
-            metrics=read_task_metrics(root, task),
-            artifact=artifact_label(detected := detect_artifacts(root, task)),
-            artifact_paths=artifact_paths(detected, task),
+    workers = {}
+    for task in task_names:
+        workers[task] = initial_worker_state(
+            root,
+            task,
+            principles.get(task, "N/A"),
+            skip_existing_submission=live and not args.force,
         )
-        for task in task_names
-    }
+    parallel = args.parallel or DEFAULT_LIVE_PARALLEL
     state = DashboardState(
         mode="live" if live else "attached",
         workers=workers,
-        parallel=args.parallel,
+        parallel=parallel,
         model=DEFAULT_LIVE_MODEL if live else "N/A",
         reasoning=DEFAULT_LIVE_REASONING if live else "N/A",
     )
@@ -928,6 +1054,7 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
             threading.Thread(target=_reader_thread, args=(process.stdout, output), daemon=True).start()
         with terminal_input():
             while not stop:
+                now = time.monotonic()
                 changed = False
                 for task, worker in state.workers.items():
                     event_paths = sorted((root / "logs").glob(f"{task}*.events.jsonl"))
@@ -935,9 +1062,7 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
                         for line in observer.read(event_path):
                             parsed = parse_jsonl_event(line, task)
                             if parsed:
-                                worker.phase = parsed["phase"]
-                                worker.status = parsed["status"]
-                                worker.action = parsed["action"]
+                                apply_live_event(worker, parsed, now)
                                 state.activities.append(f"{task:<8} {parsed['action']}")
                                 changed = True
                     stderr_paths = sorted((root / "logs").glob(f"{task}*.stderr"))
@@ -976,7 +1101,7 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
                     clean = redact_text(line)
                     if clean:
                         parse_quota_line(clean, state)
-                        parse_runner_line(clean, state)
+                        parse_runner_line(clean, state, now)
                         state.activities.append(clean)
                         changed = True
                 summary_stamp = run_summary_stamp(root)
@@ -985,7 +1110,8 @@ def run_observer(args: argparse.Namespace, *, live: bool) -> int:
                     if live:
                         summary_baseline = summary_stamp
                     changed = True
-                state.elapsed = time.monotonic() - start
+                refresh_worker_elapsed(state, now)
+                state.elapsed = now - start
                 key = read_key()
                 if key == "q":
                     break
@@ -1016,7 +1142,15 @@ def build_parser() -> argparse.ArgumentParser:
     modes.add_argument("--live", action="store_true", help="launch and visualize the existing Codex runner")
     modes.add_argument("--attach", action="store_true", help="observe independently launched runner/supervisor files")
     parser.add_argument("--tasks", nargs="+", help="task numbers/ranges; live default: 11-12")
-    parser.add_argument("--parallel", type=int, default=2, help="live worker limit (default: 2)")
+    parser.add_argument(
+        "--parallel",
+        type=int,
+        default=None,
+        help=(
+            "worker limit; live defaults to 2, while replay defaults to and "
+            "cannot exceed its fixture limit"
+        ),
+    )
     parser.add_argument("--speed", type=float, default=1.0, help="replay speed multiplier")
     parser.add_argument("--no-color", action="store_true", help="disable ANSI colour and screen control")
     parser.add_argument("--force", action="store_true", help="forward --force to the live runner")
@@ -1038,7 +1172,7 @@ def build_parser() -> argparse.ArgumentParser:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = build_parser()
     args = parser.parse_args(argv)
-    if args.parallel < 1:
+    if args.parallel is not None and args.parallel < 1:
         parser.error("--parallel must be at least 1")
     if args.speed <= 0:
         parser.error("--speed must be greater than zero")

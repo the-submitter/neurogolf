@@ -1,0 +1,35 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: Voiceover,DejaVu Sans,34,&H00F7F7F7,&H000000FF,&H00101010,&H00000000,0,0,0,0,100,100,0,0,1,2.2,0,2,90,90,16,1
+
+[Events]
+Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+Dialogue: 0,0:00:00.15,0:00:03.00,Voiceover,,0,0,0,,CodexForge tackles 400 Kaggle NeuroGolf ARC tasks.
+Dialogue: 0,0:00:03.20,0:00:08.90,Voiceover,,0,0,0,,In Kaggle NeuroGolf, each solution is a correct, compact ONNX\Ncomputational graph.
+Dialogue: 0,0:00:09.25,0:00:15.60,Voiceover,,0,0,0,,The principle is simple: use Codex for reasoning; use deterministic\Nsoftware for orchestration.
+Dialogue: 0,0:00:16.15,0:00:23.10,Voiceover,,0,0,0,,Repository state enters a deterministic Python control plane that\Nowns scheduling, locks, retries, timeouts, and logs.
+Dialogue: 0,0:00:23.30,0:00:30.65,Voiceover,,0,0,0,,It fans tasks out to Codex workers, then verifies builders,\Nexplanations, scores, and ONNX submissions.
+Dialogue: 0,0:00:31.20,0:00:38.30,Voiceover,,0,0,0,,The repository packages the runner, quota supervisor, dashboard,\Nprompts, tests, and workspaces.
+Dialogue: 0,0:00:38.55,0:00:45.70,Voiceover,,0,0,0,,Here, a live campaign selects tasks 12 through 15, with at most two\Nworkers active.
+Dialogue: 0,0:00:45.95,0:00:53.30,Voiceover,,0,0,0,,Each worker receives exactly one Kaggle NeuroGolf ARC task and an\Nisolated workspace.
+Dialogue: 0,0:00:53.55,0:01:01.40,Voiceover,,0,0,0,,Workers inspect examples and ARC-GEN generators, infer the rule, and\Nsynthesize ONNX graphs.
+Dialogue: 0,0:01:01.65,0:01:10.05,Voiceover,,0,0,0,,The dashboard turns structured Codex events into readable phases\Nwhile retaining raw JSONL logs.
+Dialogue: 0,0:01:10.35,0:01:19.10,Voiceover,,0,0,0,,Workers can run for hours, so a parent reasoning agent should not\Nstay active merely to poll them.
+Dialogue: 0,0:01:19.40,0:01:28.30,Voiceover,,0,0,0,,Deterministic Python handles concurrency, locks, process\Nsupervision, retries, timeouts, cancellation, and resumability.
+Dialogue: 0,0:01:28.60,0:01:37.95,Voiceover,,0,0,0,,As task 12 completes, its builder, explanation, ONNX submission,\Nresult, and event history become visible.
+Dialogue: 0,0:01:38.25,0:01:46.95,Voiceover,,0,0,0,,The official scorer rewards correct ONNX programs with lower\Ncombined memory and parameter cost.
+Dialogue: 0,0:01:47.25,0:01:57.35,Voiceover,,0,0,0,,Every worker tests packaged examples, probes fresh generator cases,\Ndebugs failures, and iterates toward a smaller graph.
+Dialogue: 0,0:01:57.65,0:02:08.15,Voiceover,,0,0,0,,Task-local READMEs record validation counts, exhaustive tests, cost,\Nscore, hashes, and the final submission path.
+Dialogue: 0,0:02:08.45,0:02:17.40,Voiceover,,0,0,0,,Open worker slots are filled automatically, so queued tasks start\Nwithout human coordination.
+Dialogue: 0,0:02:17.70,0:02:27.90,Voiceover,,0,0,0,,Completed tasks leave durable evidence while other Codex workers\Ncontinue reasoning and optimizing in parallel.
+Dialogue: 0,0:02:28.20,0:02:38.75,Voiceover,,0,0,0,,By now, tasks 12 through 14 are verified, while task 15 continues\Ntesting and optimization.
+Dialogue: 0,0:02:39.00,0:02:45.40,Voiceover,,0,0,0,,Quota monitoring runs independently from the worker control plane.
+Dialogue: 0,0:02:45.95,0:02:52.40,Voiceover,,0,0,0,,The legacy view shows why this matters: parallel work otherwise\Nbecomes terminals, logs, and manual status checks.
+Dialogue: 0,0:02:52.65,0:02:59.45,Voiceover,,0,0,0,,CodexForge makes long-running Codex campaigns observable,\Nverifiable, and resumable—without a parent agent polling.

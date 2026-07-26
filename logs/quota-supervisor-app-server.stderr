@@ -1,2 +1,0 @@
-[2m2026-07-15T22:09:29.565320Z[0m [31mERROR[0m [2mcodex_app_server[0m[2m:[0m Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.
-[2m2026-07-15T22:29:58.728081Z[0m [31mERROR[0m [2mcodex_app_server[0m[2m:[0m Codex's Linux sandbox uses bubblewrap and needs access to create user namespaces.

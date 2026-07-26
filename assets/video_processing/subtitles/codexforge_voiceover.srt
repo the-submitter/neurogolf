@@ -1,0 +1,105 @@
+1
+00:00:00,300 --> 00:00:05,100
+CodexForge tackles 400 Kaggle NeuroGolf ARC tasks.
+
+2
+00:00:05,350 --> 00:00:09,650
+Each solution is an executable ONNX program.
+
+3
+00:00:09,950 --> 00:00:14,650
+Correctness comes first; memory and parameter cost determine the
+score.
+
+4
+00:00:15,200 --> 00:00:21,700
+CodexForge separates reasoning from orchestration.
+
+5
+00:00:21,950 --> 00:00:29,500
+A deterministic Python control plane manages long-lived parallel
+Codex workers.
+
+6
+00:00:30,200 --> 00:00:37,350
+The repository packages the runner, quota supervisor, dashboard,
+prompts, tests, and task-local workspaces.
+
+7
+00:00:37,600 --> 00:00:44,750
+Here, a live campaign selects tasks 12 through 15, with at most two
+workers active.
+
+8
+00:00:45,000 --> 00:00:52,350
+Each worker receives exactly one Kaggle NeuroGolf ARC task and an
+isolated workspace.
+
+9
+00:00:52,600 --> 00:01:00,450
+Workers inspect examples and ARC-GEN generators, infer
+transformations, and synthesize ONNX computational graphs.
+
+10
+00:01:00,700 --> 00:01:09,100
+The dashboard turns structured Codex events into readable phases
+while retaining raw JSONL logs.
+
+11
+00:01:09,400 --> 00:01:18,150
+Workers can run for hours, so a parent reasoning agent should not
+stay active merely to poll them.
+
+12
+00:01:18,450 --> 00:01:27,350
+Deterministic Python handles concurrency, locks, process
+supervision, retries, timeouts, cancellation, and resumability.
+
+13
+00:01:27,650 --> 00:01:37,000
+As task 12 completes, its builder, explanation, ONNX submission,
+result, and event history become visible.
+
+14
+00:01:37,300 --> 00:01:46,000
+The official scorer rewards correct ONNX programs with lower memory-
+plus-parameter cost.
+
+15
+00:01:46,300 --> 00:01:56,400
+Every worker tests packaged examples, probes fresh generator cases,
+debugs failures, and iterates toward a smaller graph.
+
+16
+00:01:56,700 --> 00:02:07,200
+Task-local READMEs record validation counts, exhaustive tests, cost,
+score, hashes, and the final submission path.
+
+17
+00:02:07,500 --> 00:02:16,450
+Open worker slots are filled automatically, so queued tasks start
+without human coordination.
+
+18
+00:02:16,750 --> 00:02:26,950
+Completed tasks leave durable evidence while other Codex workers
+continue reasoning and optimizing in parallel.
+
+19
+00:02:27,250 --> 00:02:37,800
+By now, tasks 12 through 14 are verified, while task 15 continues
+testing and optimization.
+
+20
+00:02:38,050 --> 00:02:44,450
+Quota monitoring runs independently from the worker control plane.
+
+21
+00:02:44,900 --> 00:02:52,150
+Without the dashboard, parallel work becomes a wall of terminals,
+logs, and manual status checks.
+
+22
+00:02:52,400 --> 00:03:00,250
+The principle is simple: use Codex for reasoning; use deterministic
+software for orchestration.

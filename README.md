@@ -1,13 +1,18 @@
 # CodexForge: Built by Codex for Codex
 
 A Codex-built deterministic orchestration system that runs long-lived parallel
-agents to solve, validate, and optimize 400 Kaggle NeuroGolf ARC-AGI tasks into
+agents to solve, validate, and optimize 400 Kaggle NeuroGolf ARC-AGI-1 tasks into
 verified ONNX programs.
 
 CodexForge is a deterministic control plane rather than a monolithic solving
 agent. It assigns one Kaggle NeuroGolf ARC task to each isolated Codex worker,
 manages the campaign lifecycle in Python, and preserves the evidence needed to
 verify each resulting ONNX program.
+
+![A montage of ARC-GEN and ARC-AGI task examples showing the visual diversity of the NeuroGolf task space](assets/video_processing/frames/codexforge-f000037.png "Kaggle NeuroGolf ARC task space")
+
+*Task space — ARC-GEN and ARC-AGI examples illustrate the breadth of visual
+transformations that individual Codex workers must inspect and implement.*
 
 ## How this was built with Codex
 
@@ -50,7 +55,14 @@ active merely to poll workers.
 
 **Use Codex for reasoning; use deterministic software for orchestration.**
 
-This repository includes two independent Python 3 scripts:
+![CodexForge architecture showing repository state entering the deterministic Python control plane, parallel Codex workers, validation, and verified ONNX submissions](assets/video_processing/frames/codexforge-f000418.png "CodexForge deterministic control-plane architecture")
+
+*Architecture — deterministic Python owns the campaign lifecycle and fans work
+out to task-local Codex reasoning processes before validating their builders,
+explanations, scores, and ONNX submissions.*
+
+The long-running campaign control plane centers on two independent Python 3
+scripts:
 
 - `run_codex_tasks.py` runs one Codex CLI process per NeuroGolf task, with at
   most 10 processes active by default.
@@ -69,7 +81,24 @@ shared `~/.codex/models_cache.json`, which may simultaneously be written in a
 different schema by the VS Code extension. The temporary catalog is removed
 when the runner exits.
 
-## 90-second demo
+## Dashboard demo
+
+[Watch the three-minute CodexForge dashboard demo on YouTube](https://youtu.be/R024p1wH2QI).
+It follows a live campaign for tasks 012–015 with at most two Codex workers,
+shows the independent quota supervisor, and surfaces worker phases, structured
+activity, completion evidence, and verified ONNX artifacts in one terminal
+dashboard.
+
+![The live CodexForge dashboard showing tasks 012 through 014 completed while task 015 continues running](assets/video_processing/frames/codexforge-f004002.png "Live CodexForge campaign with parallel worker and artifact status")
+
+*Live campaign — three workers have produced verified task evidence and ONNX
+artifacts while the remaining worker continues reasoning and optimization.*
+
+The silent master, published render, subtitles, architecture graphics, and
+reproducible voiceover/render scripts are kept in the
+[video processing worktree](assets/video_processing/README.md).
+
+### Run the dashboard locally
 
 ```bash
 ./scripts/setup_demo.sh
@@ -370,25 +399,29 @@ python3 codex_quota_supervisor.py --max-resets 3
 python3 run_codex_tasks.py
 ```
 
-The following capture shows tasks 001–010 running with `-n 10` while the
-supervisor monitors the remaining Codex quota in a separate terminal:
+### Legacy mode: separate terminals (no dashboard)
 
-![Ten parallel Codex task workers running while the quota supervisor monitors remaining usage](<assets/Screenshot from 2026-07-16 22-43-36.png>)
+Before the dashboard was added, the runner and quota supervisor were observed
+through separate terminals and raw log files. The following historical capture
+shows tasks 001–010 running with `-n 10` while the supervisor monitors the
+remaining Codex quota:
+
+![Legacy mode with ten parallel Codex workers and a separate quota-monitor terminal](assets/video_processing/graphics/legacy-mode-parallel-workers-quota-monitor.png)
 
 As the run continues, the monitored quota reaches 0% remaining. The supervisor
 successfully consumes one reset credit, restores the quota to 100% remaining,
 and continues monitoring with two reset credits left:
 
-![Codex quota reaching zero and being successfully restored with one reset credit](<assets/Screenshot from 2026-07-16 22-58-05.png>)
+![Legacy mode showing Codex quota reaching zero and being restored with one reset credit](assets/video_processing/graphics/legacy-mode-quota-reset-success.png)
 
 The supervisor polls every 30 seconds by default. When the selected `codex`
 rate-limit window reports 100% used (0% remaining), it confirms that a reset
 credit is available and calls
 `account/rateLimitResetCredit/consume` exactly once with a persisted UUID
 idempotency key. If credit details are present, the credit expiring soonest is
-used first. `--max-resets 3` limits this invocation history to the three resets
-currently available; the default `0` means use any credits the server reports
-as available.
+used first. `--max-resets 3` limits this invocation history to at most three
+successful resets; the default `0` means use any credits the server currently
+reports as available.
 
 Runtime state and diagnostics are stored at:
 
