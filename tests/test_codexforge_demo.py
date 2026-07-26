@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 
 from demo.build_replay_fixture import build_fixture
 from demo.codexforge_dashboard import (
+    apply_live_event,
     DashboardState,
     FixtureError,
     JsonlObserver,
@@ -26,13 +27,16 @@ from demo.codexforge_dashboard import (
     detect_artifacts,
     expand_task_specs,
     extract_readme_metrics,
+    initial_worker_state,
     load_fixture,
     parse_args,
     parse_jsonl_event,
     parse_runner_line,
     redact_text,
+    refresh_worker_elapsed,
     run_replay,
     run_summary_stamp,
+    throttle_replay_timeline,
     validate_fixture,
 )
 
@@ -171,6 +175,119 @@ def test_runner_startup_line_populates_live_model_metadata() -> None:
     assert state.reasoning == "high"
 
 
+def test_live_worker_elapsed_advances_and_stops_on_completion() -> None:
+    worker = WorkerState("task006")
+    state = DashboardState(mode="live", workers={worker.task: worker}, parallel=1)
+
+    parse_runner_line(
+        "[2026-07-23T12:00:00+05:30] task006: starting attempt 1/3",
+        state,
+        now=100.0,
+    )
+    refresh_worker_elapsed(state, 165.0)
+
+    assert worker.status == "running"
+    assert worker.started_at == 100.0
+    assert worker.elapsed == 65.0
+    assert "01:05" in Renderer(color=False, stream=io.StringIO()).frame(state)
+
+    apply_live_event(
+        worker,
+        {
+            "task": "task006",
+            "phase": "completed",
+            "status": "completed",
+            "action": "Codex worker finished",
+        },
+        now=170.0,
+    )
+    refresh_worker_elapsed(state, 200.0)
+
+    assert worker.status == "completed"
+    assert worker.elapsed == 70.0
+
+
+def test_live_initial_state_skips_existing_submissions_unless_forced(tmp_path: Path) -> None:
+    submission = tmp_path / "submission"
+    submission.mkdir()
+    for task in ("task012", "task013", "task014"):
+        (submission / f"{task}.onnx").write_bytes(b"existing submission")
+
+    workers = {
+        task: initial_worker_state(
+            tmp_path,
+            task,
+            "test principle",
+            skip_existing_submission=True,
+        )
+        for task in ("task012", "task013", "task014", "task015")
+    }
+    forced = initial_worker_state(
+        tmp_path,
+        "task012",
+        "supernova",
+        skip_existing_submission=False,
+    )
+
+    skipped = workers["task012"]
+    assert (skipped.phase, skipped.status, skipped.attempt) == ("skipped", "skipped", 0)
+    assert "Existing submission" in skipped.action
+    completed_statuses = [
+        workers[task].status for task in ("task012", "task013", "task014")
+    ]
+    assert completed_statuses == ["skipped", "skipped", "skipped"]
+    assert workers["task015"].status == "queued"
+    assert (forced.phase, forced.status, forced.attempt) == ("queued", "queued", 1)
+
+
+def test_replay_parallel_override_throttles_fixture_timeline(tmp_path: Path) -> None:
+    fixture = build_fixture(ROOT)
+    events, duration = throttle_replay_timeline(
+        fixture["events"],
+        fixture["tasks"],
+        parallel=2,
+        duration=float(fixture["duration_seconds"]),
+    )
+    active: set[str] = set()
+    maximum_active = 0
+    for event in events:
+        task = event.get("task")
+        if task is None:
+            continue
+        if event["status"] == "running":
+            active.add(task)
+        elif event["status"] in {"completed", "failed", "skipped"}:
+            active.discard(task)
+        maximum_active = max(maximum_active, len(active))
+
+    assert maximum_active == 2
+    assert duration > fixture["duration_seconds"]
+
+    fixture_path = tmp_path / "fixture.json"
+    fixture_path.write_text(json.dumps(fixture))
+
+    class ParallelCapture:
+        dynamic = False
+
+        def __init__(self) -> None:
+            self.values: list[int] = []
+
+        def render(self, state: DashboardState) -> None:
+            self.values.append(state.parallel)
+
+    renderer = ParallelCapture()
+    args = argparse.Namespace(
+        fixture=str(fixture_path),
+        tasks=None,
+        parallel=2,
+        no_color=True,
+        speed=1.0,
+        max_runtime=0.001,
+    )
+    assert run_replay(args, renderer) == 0
+    assert renderer.values and set(renderer.values) == {2}
+
+
 def test_replay_makes_no_network_calls(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     fixture = build_fixture(ROOT)
     fixture["duration_seconds"] = 0.01
@@ -260,6 +377,8 @@ def test_default_launcher_selects_replay_without_codex(tmp_path: Path) -> None:
 def test_default_mode_and_reset_credit_are_safe() -> None:
     args = parse_args([])
     assert not args.live and not args.attach
+    assert args.parallel is None
+    assert parse_args(["--replay", "--parallel", "2"]).parallel == 2
     commands = build_live_commands(namespace())
     assert len(commands) == 1
     observed = build_live_commands(namespace(with_supervisor=True))
@@ -276,5 +395,7 @@ def test_live_command_safely_forwards_tasks_and_parallelism() -> None:
     assert command[1] == str(ROOT / "run_codex_tasks.py")
     assert expand_task_specs(["11-12", "task020"]) == ["task011", "task012", "task020"]
     assert expand_task_specs(["1,6"]) == ["task001", "task006"]
+    default_command = build_live_commands(namespace(parallel=None))[0]
+    assert default_command[-2:] == ["--parallel", "2"]
     with pytest.raises(ValueError):
         expand_task_specs(["11; touch /tmp/not-safe"])

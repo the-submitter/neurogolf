@@ -1,0 +1,134 @@
+[
+  {
+    "start": 0.3,
+    "end": 5.1,
+    "subtitle": "CodexForge tackles 400 Kaggle NeuroGolf ARC tasks.",
+    "spoken": "Codex Forge tackles four hundred Kaggle Neuro Golf A R C tasks."
+  },
+  {
+    "start": 5.35,
+    "end": 9.65,
+    "subtitle": "Each solution is an executable ONNX program.",
+    "spoken": "Each solution is an executable on-ix program."
+  },
+  {
+    "start": 9.95,
+    "end": 14.65,
+    "subtitle": "Correctness comes first; memory and parameter cost determine the score.",
+    "spoken": "Correctness comes first. Memory and parameter cost determine the score."
+  },
+  {
+    "start": 15.2,
+    "end": 21.7,
+    "subtitle": "CodexForge separates reasoning from orchestration.",
+    "spoken": "Codex Forge separates reasoning from orchestration."
+  },
+  {
+    "start": 21.95,
+    "end": 29.5,
+    "subtitle": "A deterministic Python control plane manages long-lived parallel Codex workers.",
+    "spoken": "A deterministic Python control plane manages long-lived parallel Codex workers."
+  },
+  {
+    "start": 30.2,
+    "end": 37.35,
+    "subtitle": "The repository packages the runner, quota supervisor, dashboard, prompts, tests, and task-local workspaces.",
+    "spoken": "The repository packages the runner, quota supervisor, dashboard, prompts, tests, and task local workspaces."
+  },
+  {
+    "start": 37.6,
+    "end": 44.75,
+    "subtitle": "Here, a live campaign selects tasks 12 through 15, with at most two workers active.",
+    "spoken": "Here, a live campaign selects tasks twelve through fifteen, with at most two workers active."
+  },
+  {
+    "start": 45.0,
+    "end": 52.35,
+    "subtitle": "Each worker receives exactly one Kaggle NeuroGolf ARC task and an isolated workspace.",
+    "spoken": "Each worker receives exactly one Kaggle Neuro Golf A R C task and an isolated workspace."
+  },
+  {
+    "start": 52.6,
+    "end": 60.45,
+    "subtitle": "Workers inspect examples and ARC-GEN generators, infer transformations, and synthesize ONNX computational graphs.",
+    "spoken": "Workers inspect examples and A R C Gen generators, infer transformations, and synthesize on-ix computational graphs."
+  },
+  {
+    "start": 60.7,
+    "end": 69.1,
+    "subtitle": "The dashboard turns structured Codex events into readable phases while retaining raw JSONL logs.",
+    "spoken": "The dashboard turns structured Codex events into readable phases, while retaining raw J S O N Lines logs."
+  },
+  {
+    "start": 69.4,
+    "end": 78.15,
+    "subtitle": "Workers can run for hours, so a parent reasoning agent should not stay active merely to poll them.",
+    "spoken": "Workers can run for hours, so a parent reasoning agent should not stay active merely to poll them."
+  },
+  {
+    "start": 78.45,
+    "end": 87.35,
+    "subtitle": "Deterministic Python handles concurrency, locks, process supervision, retries, timeouts, cancellation, and resumability.",
+    "spoken": "Deterministic Python handles concurrency, locks, process supervision, retries, timeouts, cancellation, and resumability."
+  },
+  {
+    "start": 87.65,
+    "end": 97.0,
+    "subtitle": "As task 12 completes, its builder, explanation, ONNX submission, result, and event history become visible.",
+    "spoken": "As task twelve completes, its builder, explanation, on-ix submission, result, and event history become visible."
+  },
+  {
+    "start": 97.3,
+    "end": 106.0,
+    "subtitle": "The official scorer rewards correct ONNX programs with lower memory-plus-parameter cost.",
+    "spoken": "The official scorer rewards correct on-ix programs with lower memory plus parameter cost."
+  },
+  {
+    "start": 106.3,
+    "end": 116.4,
+    "subtitle": "Every worker tests packaged examples, probes fresh generator cases, debugs failures, and iterates toward a smaller graph.",
+    "spoken": "Every worker tests packaged examples, probes fresh generator cases, debugs failures, and iterates toward a smaller graph."
+  },
+  {
+    "start": 116.7,
+    "end": 127.2,
+    "subtitle": "Task-local READMEs record validation counts, exhaustive tests, cost, score, hashes, and the final submission path.",
+    "spoken": "Task local read me files record validation counts, exhaustive tests, cost, score, hashes, and the final submission path."
+  },
+  {
+    "start": 127.5,
+    "end": 136.45,
+    "subtitle": "Open worker slots are filled automatically, so queued tasks start without human coordination.",
+    "spoken": "Open worker slots are filled automatically, so queued tasks start without human coordination."
+  },
+  {
+    "start": 136.75,
+    "end": 146.95,
+    "subtitle": "Completed tasks leave durable evidence while other Codex workers continue reasoning and optimizing in parallel.",
+    "spoken": "Completed tasks leave durable evidence, while other Codex workers continue reasoning and optimizing in parallel."
+  },
+  {
+    "start": 147.25,
+    "end": 157.8,
+    "subtitle": "By now, tasks 12 through 14 are verified, while task 15 continues testing and optimization.",
+    "spoken": "By now, tasks twelve through fourteen are verified, while task fifteen continues testing and optimization."
+  },
+  {
+    "start": 158.05,
+    "end": 164.45,
+    "subtitle": "Quota monitoring runs independently from the worker control plane.",
+    "spoken": "Quota monitoring runs independently from the worker control plane."
+  },
+  {
+    "start": 164.9,
+    "end": 172.15,
+    "subtitle": "Without the dashboard, parallel work becomes a wall of terminals, logs, and manual status checks.",
+    "spoken": "Without the dashboard, parallel work becomes a wall of terminals, logs, and manual status checks."
+  },
+  {
+    "start": 172.4,
+    "end": 180.25,
+    "subtitle": "The principle is simple: use Codex for reasoning; use deterministic software for orchestration.",
+    "spoken": "The principle is simple. Use Codex for reasoning. Use deterministic software for orchestration."
+  }
+]

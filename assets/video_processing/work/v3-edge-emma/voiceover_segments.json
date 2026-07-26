@@ -1,0 +1,134 @@
+[
+  {
+    "start": 0.15,
+    "end": 3.0,
+    "subtitle": "CodexForge tackles 400 Kaggle NeuroGolf ARC tasks.",
+    "spoken": "Codex Forge tackles four hundred ark tasks."
+  },
+  {
+    "start": 3.2,
+    "end": 8.9,
+    "subtitle": "In Kaggle NeuroGolf, each solution is a correct, compact ONNX computational graph.",
+    "spoken": "In Kaggle Neuro Golf, each solution is a correct, compact onyx computational graph."
+  },
+  {
+    "start": 9.25,
+    "end": 15.6,
+    "subtitle": "The principle is simple: use Codex for reasoning; use deterministic software for orchestration.",
+    "spoken": "The principle is simple: use Codex for reasoning, and deterministic software for orchestration."
+  },
+  {
+    "start": 16.15,
+    "end": 23.1,
+    "subtitle": "Repository state enters a deterministic Python control plane that owns scheduling, locks, retries, timeouts, and logs.",
+    "spoken": "Repository state enters a deterministic Python control plane. It owns scheduling, locks, retries, timeouts, and logs."
+  },
+  {
+    "start": 23.3,
+    "end": 30.65,
+    "subtitle": "It fans tasks out to Codex workers, then verifies builders, explanations, scores, and ONNX submissions.",
+    "spoken": "It fans tasks out to Codex workers, then verifies builders, explanations, scores, and onyx submissions."
+  },
+  {
+    "start": 31.2,
+    "end": 38.3,
+    "subtitle": "The repository packages the runner, quota supervisor, dashboard, prompts, tests, and workspaces.",
+    "spoken": "The repository packages the runner, quota supervisor, dashboard, prompts, tests, and workspaces."
+  },
+  {
+    "start": 38.55,
+    "end": 45.7,
+    "subtitle": "Here, a live campaign selects tasks 12 through 15, with at most two workers active.",
+    "spoken": "Here, a live campaign selects tasks twelve through fifteen, with at most two workers active."
+  },
+  {
+    "start": 45.95,
+    "end": 53.3,
+    "subtitle": "Each worker receives exactly one Kaggle NeuroGolf ARC task and an isolated workspace.",
+    "spoken": "Each worker receives exactly one Kaggle Neuro Golf ark task, and an isolated workspace."
+  },
+  {
+    "start": 53.55,
+    "end": 61.4,
+    "subtitle": "Workers inspect examples and ARC-GEN generators, infer the rule, and synthesize ONNX graphs.",
+    "spoken": "Workers inspect examples and ark gen generators, infer the rule, and synthesize onyx graphs."
+  },
+  {
+    "start": 61.65,
+    "end": 70.05,
+    "subtitle": "The dashboard turns structured Codex events into readable phases while retaining raw JSONL logs.",
+    "spoken": "The dashboard turns structured Codex events into readable phases, while retaining raw Jason Lines logs."
+  },
+  {
+    "start": 70.35,
+    "end": 79.1,
+    "subtitle": "Workers can run for hours, so a parent reasoning agent should not stay active merely to poll them.",
+    "spoken": "Workers can run for hours. A parent reasoning agent should not stay active merely to poll them."
+  },
+  {
+    "start": 79.4,
+    "end": 88.3,
+    "subtitle": "Deterministic Python handles concurrency, locks, process supervision, retries, timeouts, cancellation, and resumability.",
+    "spoken": "Deterministic Python handles concurrency, locks, process supervision, retries, timeouts, cancellation, and resumability."
+  },
+  {
+    "start": 88.6,
+    "end": 97.95,
+    "subtitle": "As task 12 completes, its builder, explanation, ONNX submission, result, and event history become visible.",
+    "spoken": "As task twelve completes, its builder, explanation, onyx submission, result, and event history become visible."
+  },
+  {
+    "start": 98.25,
+    "end": 106.95,
+    "subtitle": "The official scorer rewards correct ONNX programs with lower combined memory and parameter cost.",
+    "spoken": "The official scorer rewards correct onyx programs with lower combined memory and parameter cost."
+  },
+  {
+    "start": 107.25,
+    "end": 117.35,
+    "subtitle": "Every worker tests packaged examples, probes fresh generator cases, debugs failures, and iterates toward a smaller graph.",
+    "spoken": "Every worker tests packaged examples, probes fresh generator cases, debugs failures, and iterates toward a smaller graph."
+  },
+  {
+    "start": 117.65,
+    "end": 128.15,
+    "subtitle": "Task-local READMEs record validation counts, exhaustive tests, cost, score, hashes, and the final submission path.",
+    "spoken": "Task local read me files record validation counts, exhaustive tests, cost, score, hashes, and the final submission path."
+  },
+  {
+    "start": 128.45,
+    "end": 137.4,
+    "subtitle": "Open worker slots are filled automatically, so queued tasks start without human coordination.",
+    "spoken": "Open worker slots are filled automatically, so queued tasks start without human coordination."
+  },
+  {
+    "start": 137.7,
+    "end": 147.9,
+    "subtitle": "Completed tasks leave durable evidence while other Codex workers continue reasoning and optimizing in parallel.",
+    "spoken": "Completed tasks leave durable evidence, while other Codex workers continue reasoning and optimizing in parallel."
+  },
+  {
+    "start": 148.2,
+    "end": 158.75,
+    "subtitle": "By now, tasks 12 through 14 are verified, while task 15 continues testing and optimization.",
+    "spoken": "By now, tasks twelve through fourteen are verified, while task fifteen continues testing and optimization."
+  },
+  {
+    "start": 159.0,
+    "end": 165.4,
+    "subtitle": "Quota monitoring runs independently from the worker control plane.",
+    "spoken": "Quota monitoring runs independently from the worker control plane."
+  },
+  {
+    "start": 165.95,
+    "end": 172.4,
+    "subtitle": "The legacy view shows why this matters: parallel work otherwise becomes terminals, logs, and manual status checks.",
+    "spoken": "The legacy view shows why this matters: parallel work means terminals, logs, and manual checks."
+  },
+  {
+    "start": 172.65,
+    "end": 179.45,
+    "subtitle": "CodexForge makes long-running Codex campaigns observable, verifiable, and resumable—without a parent agent polling.",
+    "spoken": "Codex Forge makes long-running Codex campaigns observable, verifiable, and resumable, without a parent agent polling."
+  }
+]

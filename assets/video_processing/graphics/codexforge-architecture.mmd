@@ -1,0 +1,57 @@
+flowchart TB
+    state["Task selection and repository state"] --> control_core
+
+    subgraph control["Deterministic Python control plane"]
+        direction TB
+        control_core(["Control-plane orchestrator"])
+        responsibilities(["Concurrency and process supervision<br/>Locks, timeouts, retries, and cancellation<br/>Structured logs and summaries<br/>Artifact and completion verification"])
+        control_core --- responsibilities
+    end
+
+    subgraph worker_a["Codex worker A"]
+        direction TB
+        worker_a_core(["Worker A process"])
+        task_a(["Task-local ARC reasoning<br/>Generator inspection<br/>ONNX synthesis, testing, and optimization"])
+        worker_a_core --> task_a
+    end
+
+    subgraph worker_b["Codex worker B"]
+        direction TB
+        worker_b_core(["Worker B process"])
+        task_b(["Task-local ARC reasoning<br/>Generator inspection<br/>ONNX synthesis, testing, and optimization"])
+        worker_b_core --> task_b
+    end
+
+    subgraph worker_c["Codex worker C"]
+        direction TB
+        worker_c_core(["Worker C process"])
+        task_c(["Task-local ARC reasoning<br/>Generator inspection<br/>ONNX synthesis, testing, and optimization"])
+        worker_c_core --> task_c
+    end
+
+    control_core --> worker_a_core
+    control_core --> worker_b_core
+    control_core --> worker_c_core
+
+    task_a --> verify["Validation and official scoring"]
+    task_b --> verify
+    task_c --> verify
+
+    verify --> artifacts["Verified task-local builders, explanations,<br/>and ONNX submissions"]
+
+    classDef controlPlane fill:#e8f1ff,stroke:#2767b2,stroke-width:2px,color:#102a43;
+    classDef responsibility fill:#f5f9ff,stroke:#2767b2,stroke-width:1.5px,color:#102a43;
+    classDef worker fill:#fff3d6,stroke:#b7791f,stroke-width:1.5px,color:#4a2c00;
+    classDef task fill:#f3edff,stroke:#6b46c1,stroke-width:1.5px,color:#2d1b4e;
+    classDef output fill:#e8f8ef,stroke:#27864a,stroke-width:2px,color:#123c24;
+
+    class control_core controlPlane;
+    class responsibilities responsibility;
+    class worker_a_core,worker_b_core,worker_c_core worker;
+    class task_a,task_b,task_c task;
+    class state,verify,artifacts output;
+
+    style control fill:#e8f1ff,stroke:#2767b2,stroke-width:2px,color:#102a43,rx:12,ry:12;
+    style worker_a fill:#fffaf0,stroke:#b7791f,stroke-width:1.5px,color:#4a2c00,rx:12,ry:12;
+    style worker_b fill:#fffaf0,stroke:#b7791f,stroke-width:1.5px,color:#4a2c00,rx:12,ry:12;
+    style worker_c fill:#fffaf0,stroke:#b7791f,stroke-width:1.5px,color:#4a2c00,rx:12,ry:12;

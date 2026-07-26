@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "title": "CodexForge: Built by Codex for Codex",
+  "description": "Authored replay timeline whose final facts are extracted from committed repository evidence.",
+  "duration_seconds": 129,
+  "model": "gpt-5.6-sol",
+  "reasoning": "high",
+  "parallel_limit": 3,
+  "tasks": [
+    {
+      "task": "task012",
+      "task_id": "0962bcdd",
+      "principle": "supernova",
+      "metrics": {
+        "intermediate_memory_bytes": 0,
+        "parameters": 730,
+        "objective_cost": 730,
+        "estimated_score": 18.406955465858,
+        "serialized_model_bytes": 3151,
+        "validation_examples": {
+          "passed": 265,
+          "total": 265
+        },
+        "exhaustive_cases": {
+          "passed": 392,
+          "total": 392
+        }
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task012/README.md"
+        },
+        {
+          "path": "submission/task012.onnx"
+        },
+        {
+          "path": "results/task012.md"
+        },
+        {
+          "path": "logs/task012.events.jsonl"
+        },
+        {
+          "path": "tasks/task012/task012.onnx"
+        }
+      ],
+      "evidence": "tasks/task012/README.md"
+    },
+    {
+      "task": "task013",
+      "task_id": "0a938d79",
+      "principle": "columns",
+      "metrics": {
+        "intermediate_memory_bytes": 3014,
+        "parameters": 128,
+        "objective_cost": 3142,
+        "estimated_score": 16.947385181184,
+        "serialized_model_bytes": 2690,
+        "onnx_node_count": 31
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task013/README.md"
+        },
+        {
+          "path": "submission/task013.onnx"
+        },
+        {
+          "path": "results/task013.md"
+        },
+        {
+          "path": "logs/task013.events.jsonl"
+        },
+        {
+          "path": "tasks/task013/task013.onnx"
+        }
+      ],
+      "evidence": "tasks/task013/README.md"
+    },
+    {
+      "task": "task014",
+      "task_id": "0b148d64",
+      "principle": "minstatic",
+      "metrics": {
+        "intermediate_memory_bytes": 2456,
+        "parameters": 40,
+        "objective_cost": 2496,
+        "estimated_score": 17.177555270511,
+        "serialized_model_bytes": 2743,
+        "validation_examples": {
+          "passed": 266,
+          "total": 266
+        }
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task014/README.md"
+        },
+        {
+          "path": "submission/task014.onnx"
+        },
+        {
+          "path": "results/task014.md"
+        },
+        {
+          "path": "logs/task014.events.jsonl"
+        },
+        {
+          "path": "tasks/task014/task014.onnx"
+        }
+      ],
+      "evidence": "tasks/task014/README.md"
+    },
+    {
+      "task": "task015",
+      "task_id": "0ca9ddb6",
+      "principle": "twinkle",
+      "metrics": {
+        "intermediate_memory_bytes": 0,
+        "parameters": 600,
+        "objective_cost": 600,
+        "estimated_score": 18.603070344784,
+        "serialized_model_bytes": 2815
+      },
+      "artifacts": [
+        {
+          "path": "tasks/task015/README.md"
+        },
+        {
+          "path": "submission/task015.onnx"
+        },
+        {
+          "path": "logs/task015.events.jsonl"
+        },
+        {
+          "path": "tasks/task015/task015.onnx"
+        }
+      ],
+      "evidence": "tasks/task015/README.md"
+    }
+  ],
+  "events": [
+    {
+      "at": 0,
+      "task": null,
+      "phase": "queued",
+      "status": "queued",
+      "action": "Replay preflight passed; selected 4 repository-backed task stories"
+    },
+    {
+      "at": 3,
+      "task": "task012",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 5,
+      "task": "task013",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 7,
+      "task": "task014",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 11,
+      "task": "task012",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_0962bcdd.py (supernova)"
+    },
+    {
+      "at": 13,
+      "task": "task013",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_0a938d79.py (columns)"
+    },
+    {
+      "at": 15,
+      "task": "task014",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_0b148d64.py (minstatic)"
+    },
+    {
+      "at": 19,
+      "task": "task012",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring the documented supernova transformation"
+    },
+    {
+      "at": 21,
+      "task": "task013",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring the documented columns transformation"
+    },
+    {
+      "at": 23,
+      "task": "task014",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring the documented minstatic transformation"
+    },
+    {
+      "at": 28,
+      "task": "task012",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building the documented optimized ONNX graph"
+    },
+    {
+      "at": 30,
+      "task": "task013",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building the documented optimized ONNX graph"
+    },
+    {
+      "at": 32,
+      "task": "task014",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building the documented optimized ONNX graph"
+    },
+    {
+      "at": 38,
+      "task": "task012",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against 265 packaged examples"
+    },
+    {
+      "at": 40,
+      "task": "task013",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against packaged examples"
+    },
+    {
+      "at": 42,
+      "task": "task014",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against 266 packaged examples"
+    },
+    {
+      "at": 50,
+      "task": "task012",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 52,
+      "task": "task013",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 54,
+      "task": "task014",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 61,
+      "task": "task012",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 63,
+      "task": "task013",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 65,
+      "task": "task014",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 66,
+      "task": "task015",
+      "phase": "inspecting examples",
+      "status": "running",
+      "action": "Worker activated; inspecting task examples and existing artifacts"
+    },
+    {
+      "at": 74,
+      "task": "task015",
+      "phase": "reading generator",
+      "status": "running",
+      "action": "Reading ARC-GEN generator task_0ca9ddb6.py (twinkle)"
+    },
+    {
+      "at": 82,
+      "task": "task015",
+      "phase": "inferring rule",
+      "status": "running",
+      "action": "Inferring the documented twinkle transformation"
+    },
+    {
+      "at": 91,
+      "task": "task015",
+      "phase": "building ONNX",
+      "status": "running",
+      "action": "Building the documented optimized ONNX graph"
+    },
+    {
+      "at": 101,
+      "task": "task015",
+      "phase": "validating examples",
+      "status": "running",
+      "action": "Validating the ONNX program against packaged examples"
+    },
+    {
+      "at": 113,
+      "task": "task015",
+      "phase": "profiling official score",
+      "status": "running",
+      "action": "Profiling documented memory, parameters, objective cost, and score"
+    },
+    {
+      "at": 124,
+      "task": "task015",
+      "phase": "completed",
+      "status": "completed",
+      "action": "Verified model, submission, result, event log, and task README are preserved"
+    },
+    {
+      "at": 127,
+      "task": null,
+      "phase": "completed",
+      "status": "completed",
+      "action": "Replay complete: parallel reasoning became validated executable ONNX artifacts"
+    }
+  ]
+}
